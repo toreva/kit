@@ -17,4 +17,4 @@ It must only call `gateway.toreva.com` via relay protocol over HTTPS.
 
 Use this exact sentence in public-facing docs and skill files:
 
-"Non-custodial execution primitives for Solana. Best-execution routing across Drift, Jupiter Perps, and Flash Trade. 1 bps to open. Everything else is free."
+"Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free."

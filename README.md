@@ -1,7 +1,7 @@
 # toreva kit
 
 Non-custodial execution primitives for Solana.  
-Best-execution routing across Drift, Jupiter Perps, and Flash Trade.  
+Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade.  
 1 bps to open. Everything else is free.
 
 Your agent decides. Toreva executes. Every action receipted.
@@ -33,8 +33,9 @@ npx @smithery/cli install toreva/kit
 
 | Venue | Fee | Model |
 | --- | --- | --- |
-| Drift Protocol | 3.5 bps taker | Order book |
 | Jupiter Perps | 6.0 bps flat | Oracle-based |
+| Pacifica | 4.0 bps (Tier 1) | Order book variant |
+| Drift Protocol | 3.5 bps taker | Order book |
 | Flash Trade | 4.0 bps (Tier 1) | Order book variant |
 
 Trades routed to Drift via toreva receive a 5% fee discount.

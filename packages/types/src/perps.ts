@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const venueSchema = z.enum(['drift', 'jupiter-perps', 'flash']);
+export const venueSchema = z.enum(['drift', 'jupiter-perps', 'pacifica', 'flash']);
 
 const walletSchema = z.object({ wallet: z.string() });
 const marketSchema = z.object({ market: z.string() });

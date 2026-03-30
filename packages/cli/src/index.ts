@@ -13,7 +13,14 @@ async function main(): Promise<void> {
 
   if (command === 'perps') {
     const [toolName = 'toreva_perps_query_markets', payload = '{}'] = args;
-    await runPerpsCommand(toolName as never, JSON.parse(payload));
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(payload) as Record<string, unknown>;
+    } catch {
+      console.error(`Invalid JSON payload: ${payload}`);
+      process.exit(1);
+    }
+    await runPerpsCommand(toolName as never, parsed);
     return;
   }
 

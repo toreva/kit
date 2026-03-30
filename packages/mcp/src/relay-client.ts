@@ -11,7 +11,8 @@ export class RelayClient {
   async send<TPayload = unknown, TResult = unknown>(
     request: RelayRequest<TPayload>
   ): Promise<RelayResponse<TResult>> {
-    const endpoint = new URL('/relay', this.config.relayUrl).toString();
+    const base = this.config.relayUrl.replace(/\/+$/, '');
+    const endpoint = `${base}/relay`;
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {

@@ -1,0 +1,20 @@
+{
+  "name": "toreva-kit",
+  "private": true,
+  "version": "0.1.0",
+  "description": "toreva kit monorepo",
+  "license": "MIT",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "license-checker": "^25.0.1",
+    "turbo": "^2.5.0",
+    "typescript": "^5.7.3",
+    "@types/node": "^22.13.10"
+  }
+}

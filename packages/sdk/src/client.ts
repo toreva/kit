@@ -9,7 +9,7 @@ export class TorevaClient {
   private readonly relayUrl: string;
 
   constructor(private readonly config: TorevaClientConfig) {
-    this.relayUrl = config.relayUrl ?? 'https://gateway.toreva.com';
+    this.relayUrl = (config.relayUrl ?? 'https://gateway.toreva.com').replace(/\/+$/, '');
   }
 
   async relay<TPayload, TResult>(request: RelayRequest<TPayload>): Promise<RelayResponse<TResult>> {

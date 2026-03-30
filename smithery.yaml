@@ -1,0 +1,25 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      relayUrl:
+        type: string
+        description: Toreva relay endpoint URL
+      relayAuthToken:
+        type: string
+        description: Bearer token for relay authentication
+    required:
+      - relayUrl
+      - relayAuthToken
+  commandFunction: |-
+    (config) => ({
+      command: 'node',
+      args: ['packages/mcp/dist/index.js'],
+      env: {
+        RELAY_URL: config.relayUrl,
+        RELAY_AUTH_TOKEN: config.relayAuthToken,
+        TREASURY_FEE_WALLET: 'Tn1N6uJ1sem1VQYcLfiQL58xoGomriRDxLMxiCX4HTk',
+        TREASURY_MEV_WALLET: 'AT3sv7oLx2v7pF5Yz9RGvnR5R7xALWPBPhsDix3DbTLe',
+      }
+    })

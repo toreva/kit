@@ -48,7 +48,6 @@ Trades routed to Drift via toreva receive a 5% fee discount.
 | `toreva_earn` | Deploy USDC to yield across venues |
 | `toreva_scan` | Survey portfolio state |
 | `toreva_simulate` | Dry-run without execution |
-| `toreva_compare` | Compare venues and strategies |
 | `toreva_execute` | Execute a strategy |
 | `toreva_explain` | Narrate what happened |
 | `toreva_configure` | Adjust settings |

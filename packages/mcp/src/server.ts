@@ -16,7 +16,6 @@ export function createServer(relayClient: RelayClient): Server {
   const tools: Tool[] = [
     { name: 'toreva_scan', description: 'Scan a Solana wallet to find idle capital, yield opportunities, and risk flags. Returns actionable recommendations ranked by expected return. Non-custodial.', inputSchema },
     { name: 'toreva_simulate', description: 'Simulate execution of a strategy without committing funds. Returns projected returns, fees, venue selection, and risk assessment. Use before toreva_execute to preview what will happen.', inputSchema },
-    { name: 'toreva_compare', description: 'Compare multiple strategies or venues side-by-side. Returns ranked options with projected APY, fees, and risk levels.', inputSchema },
     { name: 'toreva_execute', description: 'Execute a strategy on Solana. Supports earning yield on USDC, staking SOL, rebalancing portfolios, and more. Non-custodial. Every action receipted.', inputSchema },
     { name: 'toreva_explain', description: 'Explain an existing intent, receipt, or strategy in plain language. Provides breakdown of what happened, fees charged, and reasoning behind venue selection.', inputSchema },
     { name: 'toreva_configure', description: 'Configure preferences for toreva execution. Set default constraints, preferred protocols, and risk tolerance.', inputSchema },

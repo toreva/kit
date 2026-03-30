@@ -8,7 +8,6 @@ const baseIntentInputSchema = z.object({
 export const intentToolSchemas = {
   toreva_scan: baseIntentInputSchema,
   toreva_simulate: baseIntentInputSchema,
-  toreva_compare: baseIntentInputSchema,
   toreva_execute: baseIntentInputSchema,
   toreva_explain: baseIntentInputSchema,
   toreva_configure: baseIntentInputSchema.extend({
@@ -19,7 +18,6 @@ export const intentToolSchemas = {
 export const INTENT_RELAY_TYPES = {
   toreva_scan: 'intent.scan',
   toreva_simulate: 'intent.simulate',
-  toreva_compare: 'intent.compare',
   toreva_execute: 'intent.execute',
   toreva_explain: 'intent.explain',
   toreva_configure: 'intent.configure'

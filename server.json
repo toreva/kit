@@ -77,10 +77,6 @@
       "description": "Simulate execution of a strategy without committing funds. Free."
     },
     {
-      "name": "toreva_compare",
-      "description": "Compare strategies or venues side-by-side. Free."
-    },
-    {
       "name": "toreva_execute",
       "description": "Execute a strategy on Solana. Non-custodial. Every action receipted."
     },

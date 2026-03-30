@@ -9,11 +9,11 @@ const venueOptionalSchema = z.object({ venue: venueSchema.optional() });
 export const perpsToolSchemas = {
   toreva_perps_long: walletSchema.merge(marketSchema).merge(venueOptionalSchema).extend({
     notionalUsd: z.number().positive(),
-    leverage: z.number().positive().max(50).optional()
+    leverage: z.number().positive().max(101).optional()
   }),
   toreva_perps_short: walletSchema.merge(marketSchema).merge(venueOptionalSchema).extend({
     notionalUsd: z.number().positive(),
-    leverage: z.number().positive().max(50).optional()
+    leverage: z.number().positive().max(101).optional()
   }),
   toreva_perps_close: walletSchema.merge(marketSchema).merge(venueOptionalSchema),
   toreva_perps_add_margin: walletSchema.merge(marketSchema).merge(venueOptionalSchema).extend({

@@ -6,7 +6,7 @@
   "homepage": "https://toreva.com/docs",
   "license": "MIT",
   "transport": "stdio",
-  "install": "npx @smithery/cli install toreva/kit",
+  "install": "npx @smithery/cli install toreva/toreva",
   "tools": [
     {
       "name": "toreva_perps_long",

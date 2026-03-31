@@ -9,13 +9,10 @@ Your agent decides. Toreva executes. Every action receipted.
 ## Install
 
 ```bash
-npx @smithery/cli install toreva/toreva
-```
-
-<!-- npm packages not yet published; add these lines when npm view succeeds:
 npm install @toreva/sdk
 npm install -g @toreva/cli
--->
+npx @smithery/cli install toreva/toreva
+```
 
 ## Perps tools
 

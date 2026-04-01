@@ -11,8 +11,33 @@ Your agent decides. Toreva executes. Every action receipted.
 ```bash
 npm install @toreva/sdk
 npm install -g @toreva/cli
-npx @smithery/cli install toreva/toreva
 ```
+
+### MCP server (stdio)
+
+```bash
+RELAY_AUTH_TOKEN=your_token npx @toreva/mcp
+```
+
+### MCP server (remote)
+
+No install needed — connect directly:
+
+```
+https://gateway.toreva.com/mcp
+```
+
+## Authentication
+
+All commands — including read-only queries — require a `RELAY_AUTH_TOKEN`.
+
+Set it as an environment variable:
+
+```bash
+export RELAY_AUTH_TOKEN=your_token
+```
+
+Request a token at [toreva.com/docs](https://toreva.com/docs).
 
 ## Perps tools
 

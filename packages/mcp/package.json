@@ -1,6 +1,6 @@
 {
   "name": "@toreva/mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "mcpName": "io.github.toreva/kit",
   "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
   "keywords": [
@@ -14,6 +14,9 @@
   },
   "license": "MIT",
   "type": "module",
+  "bin": {
+    "toreva-mcp": "dist/index.js"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -26,7 +29,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "@toreva/types": "workspace:*",
+    "@toreva/types": "workspace:^",
     "zod": "^3.24.2"
   }
 }

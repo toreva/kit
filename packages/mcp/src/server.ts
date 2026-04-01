@@ -11,7 +11,7 @@ import { perpsToolDefinitions, toPerpsRelayRequest } from './tools/perps.js';
 const inputSchema: Tool['inputSchema'] = { type: 'object', additionalProperties: true };
 
 export function createServer(relayClient: RelayClient): Server {
-  const server = new Server({ name: '@toreva/mcp', version: '0.1.0' }, { capabilities: { tools: {} } });
+  const server = new Server({ name: '@toreva/mcp', version: '0.1.1' }, { capabilities: { tools: {} } });
 
   const tools: Tool[] = [
     { name: 'toreva_scan', description: 'Scan a Solana wallet to find idle capital, yield opportunities, and risk flags. Returns actionable recommendations ranked by expected return. Non-custodial.', inputSchema },

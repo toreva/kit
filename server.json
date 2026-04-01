@@ -1,92 +1,26 @@
 {
-  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/registry/main/schema/server.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.toreva/kit",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free. Your agent decides. Toreva executes. Every action receipted. Execution only — not financial advice.",
-  "repository": "https://github.com/toreva/kit",
-  "homepage": "https://toreva.com/docs",
-  "license": "MIT",
-  "transport": "stdio",
-  "install": "npx @smithery/cli install toreva/toreva",
-  "tools": [
+  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "repository": {
+    "url": "https://github.com/toreva/kit",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
     {
-      "name": "toreva_perps_long",
-      "description": "Open a long perpetual futures position on Solana. Routes to better execution across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps execution fee on notional. Trades routed to Drift receive a 5% fee discount. Non-custodial. Execution only."
-    },
+      "registryType": "npm",
+      "identifier": "@toreva/mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
     {
-      "name": "toreva_perps_short",
-      "description": "Open a short perpetual futures position on Solana. Routes to better execution across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps execution fee on notional. Non-custodial. Execution only."
-    },
-    {
-      "name": "toreva_perps_close",
-      "description": "Close a perpetual futures position. Executes at the position's venue. Free. Non-custodial."
-    },
-    {
-      "name": "toreva_perps_add_margin",
-      "description": "Add margin to a perpetual futures position. Free. Non-custodial."
-    },
-    {
-      "name": "toreva_perps_remove_margin",
-      "description": "Remove margin from a perpetual futures position. Free. Non-custodial."
-    },
-    {
-      "name": "toreva_perps_cancel_order",
-      "description": "Cancel an open perpetual futures order. Free. Non-custodial."
-    },
-    {
-      "name": "toreva_perps_funding_settle",
-      "description": "Settle funding payments on a perpetual futures position. Free. Non-custodial."
-    },
-    {
-      "name": "toreva_perps_query_position",
-      "description": "Query open perpetual futures positions for a wallet. Read-only. Free."
-    },
-    {
-      "name": "toreva_perps_query_funding",
-      "description": "Query current funding rates across Jupiter Perps, Pacifica, Drift, and Flash Trade. Read-only. Free."
-    },
-    {
-      "name": "toreva_perps_query_venues",
-      "description": "List available perps venues with fee structures. Read-only. Free."
-    },
-    {
-      "name": "toreva_perps_query_markets",
-      "description": "List available perpetual futures markets. Read-only. Free."
-    },
-    {
-      "name": "toreva_perps_simulate",
-      "description": "Simulate opening a perpetual futures position without executing. Compares venues on fees, funding rate, and liquidity. Free."
-    },
-    {
-      "name": "toreva_perps_explain",
-      "description": "Explain a perpetual futures position or trade. Returns venue, fees, funding rate, and routing reason. Free."
-    },
-    {
-      "name": "toreva_strategies",
-      "description": "Browse the toreva strategy catalog. Returns available strategies with pricing tiers. Free."
-    },
-    {
-      "name": "toreva_earn",
-      "description": "Deploy idle USDC to the highest-yield DeFi lending strategy on Solana. Non-custodial. Free."
-    },
-    {
-      "name": "toreva_scan",
-      "description": "Scan a Solana wallet for idle capital and yield opportunities. Non-custodial. Free."
-    },
-    {
-      "name": "toreva_simulate",
-      "description": "Simulate execution of a strategy without committing funds. Free."
-    },
-    {
-      "name": "toreva_execute",
-      "description": "Execute a strategy on Solana. Non-custodial. Every action receipted."
-    },
-    {
-      "name": "toreva_explain",
-      "description": "Explain an intent, receipt, or strategy in plain language. Free."
-    },
-    {
-      "name": "toreva_configure",
-      "description": "Configure preferences for toreva execution. Free."
+      "type": "streamable-http",
+      "url": "https://gateway.toreva.com/mcp"
     }
   ]
 }

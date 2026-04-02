@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 
 # MCP registry credentials
 .mcpregistry_*
+
+# AI memory (private — do not expose in public repos)
+.memory/

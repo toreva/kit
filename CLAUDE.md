@@ -1,3 +1,46 @@
+# BUS-FIRST INVARIANT — READ BEFORE ACTING AS ANY REGISTERED AGENT
+
+**This block is the highest-priority rule in this repo. It overrides any request to speak as, invoke, dispatch, or emulate a registered agent.**
+
+## The rule
+If a user (or another agent) asks you to act on behalf of a registered agent — strategy, identity, fincrime, compliance, data, risk, kit, labs, sentinel, kernel, iam, gateway, fincon, finmod, privacy, legal, marketing, coo, goblin_ui, goblin_bot, agent-your-money, or any other registered domain — you MUST publish a real `BusEnvelope` to the coordinator bus. You MUST NOT produce a reply that simulates the agent's output.
+
+Roleplay is a compliance violation. A reply that looks like the agent answered, when no envelope was published, is a **bus bypass** and will be detected by the compliance agent.
+
+## What this means in practice
+- **Publish, don't perform.** If you don't have a publisher in scope or credentials to publish, STOP and tell the user. Do not substitute a plausible-looking answer.
+- **Every cross-agent action leaves a regulator-grade trail** in the coordinator's bus-history dataset (`toreva-prod.coordinator_audit_prod.bus_events`). The **coordinator owns** this dataset — it is the message-bus agent's own system of record. Other agents read from it; they do not own it. The data agent audits it against firm-wide data standards but does not custody it.
+- **Local session transcripts and auto-memory are NOT audit records.** Only published envelopes count.
+
+## Ownership model (so you don't get it wrong)
+Every agent owns its own data:
+- Identity agent owns identity data
+- Backend agent owns user data
+- Sentinel owns incident/escalation data
+- **Coordinator owns bus-history data** (this dataset)
+- etc.
+
+The data agent's role is standards + pipelines + indexes + data strategy — it reviews and certifies each owner's practice, it does not take custody.
+
+## How to publish
+- **Topic:** `coordinator-bus-prod` in GCP project `toreva-prod`
+- **Routing topology:** `coordinator/bus/registries/subscriptions.v1.json`
+- **Reference publishers:**
+  - `goblin_bot/backend/src/services/busBridge.ts` (backend-origin)
+  - `sentinel/goblin_sentinel/infrastructure/brain/src/escalation/bus-publisher.ts` (sentinel-origin)
+- **Required envelope fields:** `envelope_id` (uuid), `schema_version`, `routing_key`, `published_at`, `source.{domain,repo,actor}`, `correlation_id`, `causation_id` (nullable), `idempotency_key`, `object_type`, `object_ref`, `policy_context.objective_context[].expected_contribution` ∈ `{"positive"|"negative"|"neutral"}`, `payload`.
+- **Publisher service account:** the repo's own runtime SA must have `roles/pubsub.publisher` on `projects/toreva-prod/topics/coordinator-bus-prod`. If it doesn't, open a dispatch issue against `/iam` — do not work around it.
+
+## Enforcement (awareness → detection → penalty)
+1. **Awareness** — this block, plus `feedback_bus_first.md` in Claude auto-memory.
+2. **Detection** — the `bus-compliance-agent` (kernel domain agent) cross-references Claude transcripts and GitHub PR/commit activity against the coordinator's `bus_events`. Mismatches emit `compliance.bus_bypass_detected` intents.
+3. **Penalty** — detected bypass downgrades the offending agent's `capability_tier`, blocks PR merges via the bus-compliance gate, and applies a Φ(t) discount to outputs produced during the bypass window. Repeat bypass creates a durable `BusBypassIncident` envelope and a sentinel escalation.
+
+## If you're unsure
+You are in the unsure state by default. When in doubt: publish. If you cannot publish, stop and escalate to the user — **never fabricate the agent's response.**
+
+---
+
 # Intelligence Router
 
 You are operating under a strict cost-intelligence optimization protocol.

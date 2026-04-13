@@ -1,3 +1,41 @@
+<!-- TOREVA-KERNEL-LOOP-INVARIANT -->
+# KERNEL LOOP INVARIANT — READ BEFORE ESCALATING ANY DECISION
+
+**This is a LOCAL loop. You run it yourself. Do not route through kernel.**
+
+## The rule
+
+When you hit a decision point:
+
+1. **Decide locally.** If your own evidence, data, memory, and scope are enough — decide, act, write the rule to your memory, move on. This is the default.
+2. **A/B test via experimentation agent** only if step 1 genuinely cannot resolve the ambiguity. You are the caller; kernel is not.
+3. **Escalate to EA → founder only if Class A.** Class A = >$1k/day cost, >$10k one-off, material revenue shift, reputational risk, unethical, illegal, one-way door, **any app change / product-model change** (what the customer sees/does/experiences — Connect, Select, earn/stake/balance, onboarding, recovery, agent wallet), or **accountability transfer** (see RACI below).
+
+## RACI — accountability is non-delegable
+
+- **Accountable** — own the work AND check the work. Sits with whoever was FIRST given the task. One agent only.
+- **Responsible** — do the work. May be many; may be delegated by the Accountable.
+- **Consulted / Informed** — input / notification, not ownership.
+
+You may delegate Responsibility. You may NOT transfer Accountability without founder approval via EA (Class A).
+
+If you catch yourself "passing this to X" to shed ownership — stop. Either do it, delegate Responsibility while keeping Accountability, or publish `founder.action_required.accountability_transfer` to EA.
+
+## What this is not
+
+- **Not a route through kernel.** Kernel supplied the doctrine first, which is why shorthand is "the Kernel Loop". Kernel is not a router, not a broker, not step 0.
+- **Not a reason to escalate.** "I don't know which is better" is not Class A. Decide locally or run the A/B.
+- **Not a reason to wait.** Paul explicitly rejected the pattern of agents queueing ambiguous decisions for him. The whole point is to take work off his plate.
+
+## If you were going to ask Paul
+
+First ask: is it truly Class A? If not, close it locally. If yes, send it through EA (not directly to Paul).
+
+## Canonical source
+
+`kernel/docs/doctrine/continuous-ab-decisioning.md` — founder clarification 2026-04-13 is at the top of that file.
+<!-- /TOREVA-KERNEL-LOOP-INVARIANT -->
+
 # BUS-FIRST INVARIANT — READ BEFORE ACTING AS ANY REGISTERED AGENT
 
 **This block is the highest-priority rule in this repo. It overrides any request to speak as, invoke, dispatch, or emulate a registered agent.**
@@ -95,3 +133,32 @@ It must only call `gateway.toreva.com` via relay protocol over HTTPS.
 Use this exact sentence in public-facing docs and skill files:
 
 "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free."
+
+
+<!-- TOREVA-MEMORY-PROTOCOL -->
+# Session protocol
+
+## Start of every session
+
+1. Read [`MEMORY.md`](./MEMORY.md) — this repo's curated Layer-2 intelligence. Apply active lessons, open questions, and recent decisions before acting.
+2. Read [`REPO_CHARTER.md`](./REPO_CHARTER.md) and [`AGENT_CHARTER.md`](./AGENT_CHARTER.md) if the task touches scope boundaries.
+3. Read [`KPIs.md`](./KPIs.md) if the task will move a measured outcome.
+
+## End of every session
+
+1. Distil **learnings** (not tasks done) from this session.
+2. Apply the five-gate quality filter in `MEMORY.md`.
+3. Append qualifying entries to `MEMORY.md` using its YAML template.
+4. Tag each entry with relevant `OBJ-XX` IDs from `coordinator/bus/registries/system-objectives.v1.json`.
+5. Mark cross-repo-relevant entries with `promote: candidate` so the memory agent can pick them up for Layer-3 curation.
+
+## What goes where
+
+- **Instructions, conventions, rules** → this file (`CLAUDE.md` / `AGENTS.md`)
+- **Curated intelligence from sessions** → `MEMORY.md`
+- **Material decisions** → `docs/decisions/DEC-*.md`
+- **KPI ownership, thresholds, interventions** → `coo/data/metrics/`
+- **Cross-repo memory objects** → `memory/objects/`
+
+Full Layer-2 spec: [`memory/playbooks/layer-2-memory-file.md`](../memory/playbooks/layer-2-memory-file.md)
+<!-- /TOREVA-MEMORY-PROTOCOL -->

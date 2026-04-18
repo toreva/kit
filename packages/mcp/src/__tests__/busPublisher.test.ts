@@ -97,4 +97,24 @@ describe('BusPublisher', () => {
       })
     ).rejects.toThrow('Bus envelope field is required: routing_key');
   });
+
+  it('throws when UUID fields are not v4', async () => {
+    const publisher = new BusPublisher({ accessToken: 'token-123', fetchImpl: fetchMock as typeof fetch });
+    await expect(
+      publisher.publish({
+        ...envelope,
+        correlation_id: 'not-a-uuid'
+      })
+    ).rejects.toThrow('Bus envelope field must be a UUID v4: correlation_id');
+  });
+
+  it('throws when published_at is not a valid timestamp', async () => {
+    const publisher = new BusPublisher({ accessToken: 'token-123', fetchImpl: fetchMock as typeof fetch });
+    await expect(
+      publisher.publish({
+        ...envelope,
+        published_at: 'not-a-date'
+      })
+    ).rejects.toThrow('Bus envelope field must be an ISO timestamp: published_at');
+  });
 });

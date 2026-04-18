@@ -26,6 +26,9 @@ export interface BusEnvelope {
   payload: Record<string, unknown>;
 }
 
+const UUID_V4_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export interface BusPublisherConfig {
   topic?: string;
   accessToken?: string;
@@ -124,6 +127,24 @@ export class BusPublisher {
 
     if (envelope.policy_context.objective_context.length === 0) {
       throw new Error('Bus envelope policy_context.objective_context must contain at least one objective.');
+    }
+
+    const uuidFields: Array<[string, string | null]> = [
+      ['envelope_id', envelope.envelope_id],
+      ['correlation_id', envelope.correlation_id],
+      ['idempotency_key', envelope.idempotency_key],
+      ['causation_id', envelope.causation_id]
+    ];
+
+    for (const [field, value] of uuidFields) {
+      if (value !== null && !UUID_V4_PATTERN.test(value)) {
+        throw new Error(`Bus envelope field must be a UUID v4: ${field}`);
+      }
+    }
+
+    const publishedAt = Date.parse(envelope.published_at);
+    if (Number.isNaN(publishedAt)) {
+      throw new Error('Bus envelope field must be an ISO timestamp: published_at');
     }
   }
 }

@@ -17,6 +17,11 @@ Out of scope:
 - Business logic (routing, scoring, fee enforcement, strategy execution)
 - Backend server code or HTTP serving frameworks
 - Secrets, keypairs, or internal-only URLs
+- Internal facts or docs: cross-repo/agent topology, dispatches, operating
+  procedures, ownership maps, source-of-truth pointers, unreleased product/GTM
+  plans, service choreography, liveness notes, postmortems, local transcripts,
+  and coordination artifacts. Important internal material belongs in cdx or the
+  owning internal repo, not this public thin-client repo.
 - Direct blockchain interaction (all execution goes through gateway)
 - Internal platform services or infrastructure
 - Venue intelligence gathering or market data production
@@ -59,5 +64,6 @@ Out of scope:
 - SDK, CLI, and MCP server all communicate exclusively through gateway.toreva.com
 - Zero business logic in any package (routing, scoring, fee enforcement)
 - Zero secrets or internal URLs in published code
+- Zero internal facts/docs or coordination artifacts in committed content
 - Tool names and relay types are canonical (match gateway contract)
 - MCP server works in both stdio and remote modes

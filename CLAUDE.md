@@ -125,6 +125,13 @@ It must only call `gateway.toreva.com` via relay protocol over HTTPS.
 - No business logic (routing, scoring, fee enforcement).
 - No backend frameworks for serving HTTP.
 - No secrets, keypairs, or internal-only URLs.
+- No internal facts or docs. This means anything a public thin-client repo
+  should not expose: internal agent/repo topology, dispatches, operating
+  procedures, ownership maps, source-of-truth pointers, unreleased product/GTM
+  plans, service choreography, liveness notes, postmortems, or local transcripts.
+  This also includes noisy coordination artifacts that would pollute SDK/CLI/MCP
+  adoption. If the information matters, route it to the cdx repo/agent or the
+  owning internal repo instead of committing it here.
 - Keep tool names and relay types canonical.
 - Use `venue` as the schema field name (never `protocolId`).
 

@@ -1,0 +1,59 @@
+name: Feature request
+description: A primitive, tool, type schema, or capability you'd want kit / MCP to expose.
+title: "[feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. First-response SLA is under 4 hours during AEST business hours, under 24 hours otherwise.
+
+        If you're not sure whether what you want already exists, post in [Discussions](https://github.com/toreva/kit/discussions) first — saves us both a round trip.
+
+        Doctrine reference for what's locked vs open: [`po/docs/decisions/DEC-001-wallet-mode-architecture.md`](https://github.com/toreva/po/blob/main/docs/decisions/DEC-001-wallet-mode-architecture.md). The MCP tool surface in §"Connect integration mechanic — MCP" is the v0.2 lock; we're collecting feedback for v0.3.
+  - type: textarea
+    id: workflow
+    attributes:
+      label: What real workflow are you trying to build?
+      description: Spec-language preferred. "I want my agent to X, then Y, then Z." Concrete beats abstract.
+    validations:
+      required: true
+  - type: textarea
+    id: blocker
+    attributes:
+      label: What's blocking you today
+      description: What can't you do with the current kit / MCP surface? Be specific — tool name, missing parameter, missing return field, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed shape (optional)
+      description: If you have a tool signature / type / API in mind, sketch it. We may converge on something different but your starting point helps.
+      render: typescript
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've tried
+      description: Workarounds in your own code, in another tool, in a competitor. Tells us how urgent the gap is.
+  - type: dropdown
+    id: scope-guess
+    attributes:
+      label: Where do you think this belongs (your guess)
+      description: We'll route correctly even if you guess wrong; this just helps speed up routing.
+      options:
+        - "kit / MCP tool surface"
+        - "kit / SDK type schemas"
+        - "gateway / MCP server runtime"
+        - "investment-product / strategy semantics"
+        - "pricing / rate card"
+        - "I genuinely don't know"
+      default: 5
+    validations:
+      required: true
+  - type: checkboxes
+    id: regulated-claim-check
+    attributes:
+      label: Regulated-claim check
+      options:
+        - label: This feature touches a regulated-financial-product surface (Earn, Stake, Balance, yield, return, custody). I understand the response will route via `compliance-agent` first.

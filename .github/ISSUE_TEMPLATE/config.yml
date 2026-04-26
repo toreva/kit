@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: General Q&A and how-to questions
+    url: https://github.com/toreva/kit/discussions
+    about: For "how do I…?" questions, design discussion, and showing off what you've built. Faster turn-around than Issues.
+  - name: Compliance-sensitive or private questions
+    url: mailto:dev@toreva.io
+    about: For anything you'd rather not post publicly (employer policy, regulated-product questions, security reports).
+  - name: Triage protocol & SLAs
+    url: https://github.com/toreva/cdx/blob/main/docs/triage-protocol.md
+    about: How we route issues and what response time to expect.

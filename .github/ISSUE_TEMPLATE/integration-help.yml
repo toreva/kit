@@ -1,0 +1,68 @@
+name: Integration help
+description: You're trying to wire Toreva into your client / framework / workflow and stuck.
+title: "[help] "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome. If your question is "how do I install / authenticate / make my first tool call work", you're in the right place.
+
+        For lighter-weight Q&A, [Discussions](https://github.com/toreva/kit/discussions) gets faster turn-around. Issues are best when you've already tried and hit a wall worth tracking.
+
+        Canonical install reference: [`kit/README.md`](https://github.com/toreva/kit/blob/main/README.md) and the per-skill docs under [`kit/skills/`](https://github.com/toreva/kit/tree/main/skills).
+  - type: input
+    id: client
+    attributes:
+      label: What client / framework / tool are you trying to integrate from?
+      placeholder: "Claude desktop / Cursor / LangChain / custom Python / something else"
+    validations:
+      required: true
+  - type: input
+    id: kit-version
+    attributes:
+      label: kit / package version
+      placeholder: "@toreva/mcp 0.1.2"
+  - type: textarea
+    id: goal
+    attributes:
+      label: What's your goal — in one sentence
+      description: "I want my agent to X" — the workflow you want to enable, not the technical step.
+      placeholder: "I want my Cursor session to be able to check my Toreva balance and place a small SOL trade when I tell it to."
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you've tried so far
+      description: Doc links you've followed, commands you've run, error messages you've hit. Copy-paste exact strings — paraphrase loses signal.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: stuck-on
+    attributes:
+      label: Where you're stuck
+      description: One paragraph. The current symptom and the gap between current state and goal.
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: At what stage of integration are you stuck?
+      options:
+        - "Install — can't get the MCP server / SDK installed"
+        - "Auth — install works but token / OAuth / delegation isn't accepted"
+        - "First tool call — auth works but tool calls fail"
+        - "Specific tool semantics — most tools work but one is behaving wrong"
+        - "Receipts / explanation — tool calls work but I can't make sense of the receipts"
+        - "Beyond setup — performance / scale / reliability"
+      default: 0
+    validations:
+      required: true
+  - type: checkboxes
+    id: regulated-claim-check
+    attributes:
+      label: Regulated-claim check
+      options:
+        - label: My question touches a regulated-financial-product surface (Earn, Stake, Balance, yield, return, custody). I understand parts of my answer may route via `compliance-agent`.

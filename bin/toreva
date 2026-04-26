@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+// Repo-root shim for `npx toreva` against this monorepo.
+// Published `npx @toreva/cli` runs packages/cli/dist/index.js directly via its own bin.
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { existsSync } from 'node:fs';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const cliDist = join(here, '..', 'packages', 'cli', 'dist', 'index.js');
+
+if (!existsSync(cliDist)) {
+  console.error(
+    `[toreva] Built CLI not found at ${cliDist}.\n` +
+      `Run \`pnpm -C packages/cli build\` first, or install the published \`@toreva/cli\`.`
+  );
+  process.exit(1);
+}
+
+const res = spawnSync(process.execPath, [cliDist, ...process.argv.slice(2)], { stdio: 'inherit' });
+process.exit(res.status ?? 1);

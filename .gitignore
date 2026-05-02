@@ -146,3 +146,67 @@ vite.config.ts.timestamp-*
 
 # AI memory (private — do not expose in public repos)
 .memory/
+
+# ───── IAM-managed sensitivity-tier baseline (auto-appended by onboard-agent.sh) ─────
+# Sensitivity tier: open-public
+# Used by: repos that are public OR will be public OR are read by external integrators
+# (e.g. kit, soon docs).
+# Rule: NEVER let anything sensitive land in these repos.
+# Owner: iam-agent (validated on every onboard-agent.sh run for open-public tier).
+
+# --- secrets / credentials (never in any repo, especially open-public) ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+gcp-key.json
+service-account*.json
+*.cert
+*.crt
+
+# --- internal dispatch artefacts (never publish to integrators) ---
+intake/responses/*.md
+intake/responses/*.err
+intake/processed/
+
+# --- internal correspondence / non-public memory ---
+MEMORY.local.md
+*.local.md
+.claude/memory/
+
+# --- build artefacts ---
+node_modules/
+dist/
+build/
+.turbo/
+.next/
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- editor / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# --- logs (may include sensitive request bodies) ---
+*.log
+logs/
+
+# --- test artefacts that may contain sample customer data ---
+test-fixtures/private/
+test-data/customer-*/
+
+# --- internal-only docs (never published) ---
+docs/internal/
+INTERNAL-*.md

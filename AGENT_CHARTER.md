@@ -23,6 +23,8 @@ The Kit agent **does not**:
 - Implement strategy execution or financial decision logic
 - Use any schema field name other than `venue` (never `protocolId`)
 - Access internal services or bypass the gateway
+- Commit internal facts/docs or coordination artifacts. If they matter, route
+  them to cdx or the owning internal repo.
 
 ## Invocation triggers
 Invoke the agent when:
@@ -47,6 +49,10 @@ Invoke the agent when:
 ## Must-never rules
 - Never include business logic (routing, scoring, fee enforcement) in any package
 - Never include secrets, keypairs, or internal-only URLs in published code
+- Never commit internal facts/docs: cross-repo/agent topology, dispatches,
+  operating procedures, ownership maps, source-of-truth pointers, unreleased
+  product/GTM plans, service choreography, liveness notes, postmortems, local
+  transcripts, or coordination artifacts
 - Never use backend HTTP serving frameworks
 - Never communicate with any endpoint other than gateway.toreva.com
 - Never use `protocolId` — always use `venue` as the schema field name

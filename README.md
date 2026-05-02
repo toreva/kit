@@ -8,36 +8,69 @@ Your agent decides. Toreva executes. Every action receipted.
 
 ## Install
 
-```bash
-npm install @toreva/sdk
-npm install -g @toreva/cli
-```
-
-### MCP server (stdio)
+The fastest path — wires Toreva into your MCP-aware client (Claude
+Desktop, OpenClaw, Cursor) and authenticates you in two commands:
 
 ```bash
-RELAY_AUTH_TOKEN=your_token npx @toreva/mcp
+npx toreva init --client=claude-desktop   # or openclaw | cursor
+npx toreva login
 ```
 
-### MCP server (remote)
+`toreva init` writes the Toreva MCP server stanza into your client's
+config file. `toreva login` runs the gateway's device-code flow and
+stores the resulting token at `~/.config/toreva/config.json` (chmod
+600).
 
-No install needed — connect directly:
+Restart your MCP client and verify:
+
+```bash
+npx toreva doctor
+```
+
+You should see three `[ OK ]` lines: `config_present`, `auth_token`,
+`mcp_call`.
+
+Per-client snippets live in [`examples/`](./examples/) — one folder per
+supported client (`claude-desktop`, `openclaw`, `cursor`).
+
+### Direct package installs (advanced)
+
+```bash
+npm install @toreva/sdk        # TypeScript client library
+npm install -g @toreva/cli     # global `toreva` binary
+```
+
+### MCP server (stdio, run-it-yourself)
+
+```bash
+TOREVA_AUTH_TOKEN=your_token npx @toreva/mcp
+```
+
+### MCP server (remote, no install)
 
 ```
-https://gateway.toreva.com/mcp
+https://mcp.toreva.com
 ```
 
 ## Authentication
 
-All commands — including read-only queries — require a `RELAY_AUTH_TOKEN`.
-
-Set it as an environment variable:
+`toreva login` is the standard path. For CI / power users, set
+`TOREVA_AUTH_TOKEN` directly to skip the device-code flow:
 
 ```bash
-export RELAY_AUTH_TOKEN=your_token
+export TOREVA_AUTH_TOKEN=your_token
+npx toreva login   # writes the token to ~/.config/toreva/config.json
 ```
 
 Request a token at [toreva.com/docs](https://toreva.com/docs).
+
+### Environment variables
+
+| Var | Default | Purpose |
+| --- | --- | --- |
+| `TOREVA_MCP_URL` | `https://mcp.toreva.com` | Gateway URL |
+| `TOREVA_AUTH_TOKEN` | — | Skip device-code flow, persist this token |
+| `TOREVA_CONFIG_DIR` | `~/.config/toreva` | Override on-disk config dir |
 
 ## Perps tools
 

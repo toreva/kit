@@ -1,0 +1,85 @@
+name: Bug report
+description: Something in toreva/kit (SDK, MCP server tools, type schemas) is broken or behaves unexpectedly.
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. First-response SLA is under 4 hours during AEST business hours, under 24 hours otherwise.
+        See [`cdx/docs/triage-protocol.md`](https://github.com/toreva/cdx/blob/main/docs/triage-protocol.md).
+
+        If this is a **production-down** or **security** issue, also email `dev@toreva.io` with subject prefix `URGENT — production`.
+
+        If your question is "how do I…?" rather than "this is broken", post in [Discussions](https://github.com/toreva/kit/discussions) instead — gets faster, less formal answers.
+  - type: input
+    id: kit-version
+    attributes:
+      label: kit / package version
+      description: e.g. `@toreva/mcp 0.1.2`. Run `npm ls @toreva/mcp` or check your `package.json`.
+      placeholder: "@toreva/mcp 0.1.2"
+    validations:
+      required: true
+  - type: input
+    id: mcp-client
+    attributes:
+      label: MCP client (if relevant)
+      description: e.g. Claude desktop 0.7.x, Cursor 0.42.x, custom client. Leave blank if SDK-only bug.
+      placeholder: "Claude desktop 0.7.4"
+  - type: input
+    id: os
+    attributes:
+      label: OS + version
+      placeholder: "macOS 14.5"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: One paragraph. What did you do, what did the system do.
+      placeholder: |
+        I called `place_order(wallet_id="...", asset="SOL", side="buy", amount=10)` from Claude desktop and got a 5xx with body `{"error": "..."}`.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      placeholder: |
+        Per DEC-001 §MCP, `place_order` should return a receipt envelope with a real Solana tx signature.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Code, commands, or step-by-step. Smaller is better.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / error output
+      description: Redact any OAuth tokens or wallet addresses you don't want public. (We can never recover what you've already posted publicly.)
+      render: shell
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity (your view)
+      options:
+        - "P0 — production down / financial loss imminent"
+        - "P1 — blocking my development, no workaround"
+        - "P2 — blocking my development, workaround exists"
+        - "P3 — annoying, not blocking"
+      default: 2
+    validations:
+      required: true
+  - type: checkboxes
+    id: regulated-claim-check
+    attributes:
+      label: Regulated-claim check
+      description: Tick if your bug touches Earn / Stake / Balance / yield / custody / "is this safe?" — we'll route via `compliance-agent` first.
+      options:
+        - label: This bug touches a regulated-financial-product surface (Earn, Stake, Balance, yield, return, custody, safety-of-funds claim).

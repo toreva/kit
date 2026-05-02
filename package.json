@@ -5,6 +5,9 @@
   "description": "toreva kit monorepo",
   "license": "MIT",
   "packageManager": "pnpm@10.0.0",
+  "bin": {
+    "toreva": "bin/toreva"
+  },
   "scripts": {
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",

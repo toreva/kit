@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "toreva": {
+      "command": "npx",
+      "args": ["-y", "@toreva/mcp"],
+      "env": {
+        "TOREVA_MCP_URL": "https://mcp.toreva.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Toreva Agentic Perps Relay",
+    "version": "0.1.0",
+    "description": "Public relay packet for Toreva establish and perps agent integrations. Toreva Kit is the public source of truth while consumer website docs remain intentionally narrow."
+  },
+  "servers": [
+    {
+      "url": "https://gateway.toreva.com"
+    }
+  ],
+  "paths": {
+    "/relay": {
+      "post": {
+        "summary": "Relay a Toreva tool request",
+        "operationId": "relayToolRequest",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelayRequest"
+              },
+              "examples": {
+                "establish": {
+                  "summary": "Establish Swig master authority and Pacifica child capability",
+                  "value": {
+                    "type": "intent.establish",
+                    "toolName": "toreva_establish",
+                    "requestId": "establish-perps-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "prompt": "Create a Toreva perps agent capability for SOL and BTC with low notional limits.",
+                      "agent_authority": {
+                        "delegation_provider": "swig",
+                        "network": "solana",
+                        "signer_kind": "delegated_authority",
+                        "policy_id": "perps_agent_v1"
+                      },
+                      "capabilities": [
+                        {
+                          "capability_type": "perps",
+                          "delegation_provider": "venue_api",
+                          "network": "solana",
+                          "venue": "pacifica",
+                          "execution_adapter": "pacifica",
+                          "signer_kind": "venue_api_agent",
+                          "guardrails": {
+                            "max_notional_usd": 500,
+                            "max_leverage": 1.5,
+                            "markets": [
+                              "SOL-PERP",
+                              "BTC-PERP"
+                            ],
+                            "collateral_tokens": [
+                              "USDC"
+                            ],
+                            "requires_human_approval_for_funding": true,
+                            "requires_human_approval_for_leverage_increase": true
+                          },
+                          "provider_metadata": {
+                            "agent_wallet_public_key": "PacificaAgentWallet11111111111111111111"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "query_venues": {
+                  "summary": "Query enabled venues",
+                  "value": {
+                    "type": "perps.query_venues",
+                    "toolName": "toreva_perps_query_venues",
+                    "requestId": "query-venues-001",
+                    "payload": {}
+                  }
+                },
+                "simulate": {
+                  "summary": "Simulate SOL long",
+                  "value": {
+                    "type": "perps.simulate",
+                    "toolName": "toreva_perps_simulate",
+                    "requestId": "simulate-sol-long-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "token": "SOL",
+                      "direction": "long",
+                      "sizeUsd": 180,
+                      "leverage": 1.2,
+                      "collateralToken": "USDC",
+                      "collateralAmount": 150
+                    }
+                  }
+                },
+                "perps_long": {
+                  "summary": "Open a routed SOL long",
+                  "value": {
+                    "type": "perps.open_long",
+                    "toolName": "toreva_perps_long",
+                    "requestId": "open-sol-long-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "token": "SOL",
+                      "sizeUsd": 180,
+                      "leverage": 1.2,
+                      "collateralToken": "USDC",
+                      "collateralAmount": 150,
+                      "maxSlippageBps": 50,
+                      "clientRequestId": "strategy-run-2026-05-06-001"
+                    }
+                  }
+                },
+                "perps_short": {
+                  "summary": "Open a Pacifica BTC short",
+                  "value": {
+                    "type": "perps.open_short",
+                    "toolName": "toreva_perps_short",
+                    "requestId": "open-btc-short-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "token": "BTC",
+                      "sizeUsd": 200,
+                      "leverage": 1.1,
+                      "collateralToken": "USDC",
+                      "collateralAmount": 182,
+                      "venue": "pacifica",
+                      "maxSlippageBps": 50,
+                      "clientRequestId": "strategy-run-2026-05-06-002"
+                    }
+                  }
+                },
+                "close": {
+                  "summary": "Close a Pacifica position",
+                  "value": {
+                    "type": "perps.close",
+                    "toolName": "toreva_perps_close",
+                    "requestId": "close-sol-long-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "venue": "pacifica",
+                      "positionId": "position-1",
+                      "token": "SOL",
+                      "side": "long",
+                      "maxSlippageBps": 50,
+                      "clientRequestId": "strategy-run-2026-05-06-003"
+                    }
+                  }
+                },
+                "cancel_order": {
+                  "summary": "Cancel a Pacifica order",
+                  "value": {
+                    "type": "perps.cancel_order",
+                    "toolName": "toreva_perps_cancel_order",
+                    "requestId": "cancel-order-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "venue": "pacifica",
+                      "positionId": "position-1",
+                      "orderId": "order-1",
+                      "clientRequestId": "strategy-run-2026-05-06-004"
+                    }
+                  }
+                },
+                "funding_settle": {
+                  "summary": "Settle funding on a Pacifica position",
+                  "value": {
+                    "type": "perps.funding_settle",
+                    "toolName": "toreva_perps_funding_settle",
+                    "requestId": "funding-settle-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "venue": "pacifica",
+                      "positionId": "position-1",
+                      "token": "SOL",
+                      "side": "long",
+                      "clientRequestId": "strategy-run-2026-05-06-005"
+                    }
+                  }
+                },
+                "add_margin": {
+                  "summary": "Add margin to a position",
+                  "value": {
+                    "type": "perps.add_margin",
+                    "toolName": "toreva_perps_add_margin",
+                    "requestId": "add-margin-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "venue": "pacifica",
+                      "positionId": "position-1",
+                      "token": "USDC",
+                      "amount": 25,
+                      "clientRequestId": "strategy-run-2026-05-06-006"
+                    }
+                  }
+                },
+                "remove_margin": {
+                  "summary": "Remove margin from a position",
+                  "value": {
+                    "type": "perps.remove_margin",
+                    "toolName": "toreva_perps_remove_margin",
+                    "requestId": "remove-margin-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111",
+                      "venue": "pacifica",
+                      "positionId": "position-1",
+                      "token": "USDC",
+                      "amount": 25,
+                      "clientRequestId": "strategy-run-2026-05-06-007"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Relay accepted and returned a typed result or typed error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "RelayRequest": {
+        "type": "object",
+        "required": [
+          "type",
+          "toolName",
+          "payload"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "toolName": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Idempotency key supplied by the caller."
+          },
+          "payload": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

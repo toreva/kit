@@ -68,8 +68,8 @@ describe('staking tools registration', () => {
 });
 
 describe('total tool count', () => {
-  it('registers exactly 24 tools (20 existing + 4 new)', async () => {
+  it('registers exactly 25 tools including establish, perps, wallet, and staking families', async () => {
     const tools = await listTools();
-    expect(tools).toHaveLength(24);
+    expect(tools).toHaveLength(25);
   });
 });

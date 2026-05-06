@@ -29,6 +29,7 @@ const allSchemas: Record<string, ZodTypeAny> = {
 };
 
 const toolDescriptions: Array<{ name: string; description: string }> = [
+  { name: 'toreva_establish', description: 'Establish a Toreva delegated agent authority for a human wallet. Use it to attach Swig master authority and venue-specific child capabilities, such as a Pacifica API agent wallet for perps, under user-approved policy. Non-custodial. Every setup action should be receipted.' },
   { name: 'toreva_scan', description: 'Scan a Solana wallet to find idle capital, yield opportunities, and risk flags. Returns actionable recommendations ranked by expected return. Non-custodial.' },
   { name: 'toreva_simulate', description: 'Simulate execution of a strategy without committing funds. Returns projected returns, fees, venue selection, and risk assessment. Use before toreva_execute to preview what will happen.' },
   { name: 'toreva_execute', description: 'Execute a strategy on Solana. Supports earning yield on USDC, staking SOL, rebalancing portfolios, and more. Non-custodial. Every action receipted.' },

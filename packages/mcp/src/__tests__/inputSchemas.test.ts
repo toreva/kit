@@ -21,6 +21,14 @@ function findTool(tools: Tool[], name: string): Tool {
 }
 
 describe('inputSchemas — typed per tool', () => {
+  it('toreva_establish requires walletAddress and accepts child capabilities', async () => {
+    const tools = await listTools();
+    const schema = findTool(tools, 'toreva_establish').inputSchema as any;
+    expect(schema.required).toEqual(['walletAddress']);
+    expect(schema.properties).toHaveProperty('capabilities');
+    expect(schema.properties).toHaveProperty('agent_authority');
+  });
+
   it('toreva_scan inputSchema has required=[wallet, prompt]', async () => {
     const tools = await listTools();
     const schema = findTool(tools, 'toreva_scan').inputSchema;
@@ -28,18 +36,26 @@ describe('inputSchemas — typed per tool', () => {
     expect(schema.required).toHaveLength(2);
   });
 
-  it('toreva_perps_long inputSchema has required=[wallet, market, notionalUsd]', async () => {
+  it('toreva_perps_long inputSchema matches Gateway open input contract', async () => {
     const tools = await listTools();
     const schema = findTool(tools, 'toreva_perps_long').inputSchema;
-    expect(schema.required).toEqual(expect.arrayContaining(['wallet', 'market', 'notionalUsd']));
-    expect(schema.required).toHaveLength(3);
+    expect(schema.required).toEqual(
+      expect.arrayContaining([
+        'walletAddress',
+        'token',
+        'sizeUsd',
+        'leverage',
+        'collateralToken',
+        'collateralAmount'
+      ])
+    );
   });
 
-  it('toreva_perps_long inputSchema has leverage as optional (not in required)', async () => {
+  it('toreva_perps_long inputSchema has venue as optional', async () => {
     const tools = await listTools();
     const schema = findTool(tools, 'toreva_perps_long').inputSchema as any;
-    expect(schema.required).not.toContain('leverage');
-    expect(schema.properties).toHaveProperty('leverage');
+    expect(schema.required).not.toContain('venue');
+    expect(schema.properties).toHaveProperty('venue');
   });
 
   it('toreva_perps_query_venues has no required properties', async () => {

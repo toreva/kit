@@ -5,28 +5,56 @@ describe('perpsToolSchemas', () => {
   describe('toreva_perps_long', () => {
     it('parses valid input', () => {
       const result = perpsToolSchemas.toreva_perps_long.safeParse({
-        wallet: 'abc',
-        market: 'SOL-PERP',
-        notionalUsd: 1000,
+        walletAddress: '11111111111111111111111111111111',
+        token: 'SOL',
+        sizeUsd: 1000,
+        leverage: 2,
+        collateralToken: 'USDC',
+        collateralAmount: 500,
       });
       expect(result.success).toBe(true);
     });
 
-    it('rejects negative notionalUsd', () => {
+    it('rejects negative sizeUsd', () => {
       const result = perpsToolSchemas.toreva_perps_long.safeParse({
-        wallet: 'abc',
-        market: 'SOL-PERP',
-        notionalUsd: -100,
+        walletAddress: '11111111111111111111111111111111',
+        token: 'SOL',
+        sizeUsd: -100,
+        leverage: 2,
+        collateralToken: 'USDC',
+        collateralAmount: 500,
       });
       expect(result.success).toBe(false);
     });
 
     it('rejects leverage > 101', () => {
       const result = perpsToolSchemas.toreva_perps_long.safeParse({
-        wallet: 'abc',
+        walletAddress: '11111111111111111111111111111111',
+        token: 'SOL',
+        sizeUsd: 1000,
+        leverage: 102,
+        collateralToken: 'USDC',
+        collateralAmount: 500,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects the old Kit wallet/market/notional aliases', () => {
+      const result = perpsToolSchemas.toreva_perps_long.safeParse({
+        wallet: '11111111111111111111111111111111',
         market: 'SOL-PERP',
         notionalUsd: 1000,
-        leverage: 102,
+        leverage: 2,
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('toreva_perps_close', () => {
+    it('requires the venue from the position venue', () => {
+      const result = perpsToolSchemas.toreva_perps_close.safeParse({
+        walletAddress: '11111111111111111111111111111111',
+        positionId: 'position-1',
       });
       expect(result.success).toBe(false);
     });

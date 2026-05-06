@@ -6,6 +6,36 @@ Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade.
 
 Your agent decides. Toreva executes. Every action receipted.
 
+## Agentic perps setup
+
+Use `toreva_establish` before perps execution when an agent needs delegated
+authority for a human wallet. The standard perps pattern is:
+
+```text
+human wallet
+  -> Toreva/Swig master authority
+  -> venue-specific child capability
+  -> Pacifica API agent wallet when Pacifica is selected
+```
+
+The human wallet remains the root owner. The Swig authority is the policy and
+capital-management control layer. Pacifica uses a separate API agent wallet
+because Pacifica REST orders require an on-curve Ed25519 signer. Toreva can
+create, bind, fund, route, monitor, and revoke that child capability through
+Toreva surfaces; the user does not need to open Pacifica.
+
+For best execution, omit `venue` on `toreva_perps_long` or
+`toreva_perps_short`. Toreva will compare enabled venues and route by estimated
+all-in cost. Set `venue` only when you intentionally want a specific venue.
+Perps tools use the Gateway MCP field contract: `walletAddress`, `token`,
+`sizeUsd`, `leverage`, `collateralToken`, and `collateralAmount`.
+
+The public integration packet lives in this repo:
+
+- [Agentic perps integration patterns](./docs/agentic-perps-integration-patterns.md)
+- [OpenAPI-style relay examples](./docs/toreva-perps.openapi.json)
+- [Claude Code agent prompt](./docs/claude-code-agent-prompt.md)
+
 ## Install
 
 The fastest path — wires Toreva into your MCP-aware client (Claude
@@ -62,7 +92,9 @@ export TOREVA_AUTH_TOKEN=your_token
 npx toreva login   # writes the token to ~/.config/toreva/config.json
 ```
 
-Request a token at [toreva.com/docs](https://toreva.com/docs).
+Use `toreva login` for the standard device-code flow, or request an integration
+token from your Toreva contact. The Kit repository is the public source of
+truth for agent, SDK, CLI, Skills, and MCP integration details.
 
 ### Environment variables
 
@@ -103,6 +135,7 @@ Trades routed to Drift via toreva receive a 5% fee discount.
 | Tool | What it does |
 | --- | --- |
 | `toreva_strategies` | Browse strategy catalog with pricing |
+| `toreva_establish` | Attach a delegated agent authority and child capabilities to a wallet |
 | `toreva_earn` | Deploy USDC to yield across venues |
 | `toreva_scan` | Survey portfolio state |
 | `toreva_simulate` | Dry-run without execution |

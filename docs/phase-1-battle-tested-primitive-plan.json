@@ -1,0 +1,344 @@
+{
+  "schemaVersion": "toreva.phase-1-battle-tested-plan.v1",
+  "claimBoundary": "Phase 1 is an implementation target, not an operational claim. Green requires mainnet evidence, complete developer surfaces, venue admission, Sentinel review, Risk approval, receipts, monitoring, and recovery.",
+  "greenDefinition": "Green means every primitive in the family is battle-tested with real mainnet funds, documented, and usable through Kit, API, MCP, CLI, Skills, and SDK for the specific family, venue, and version.",
+  "requiredEvidence": [
+    "allFamilyPrimitivesBattleTested",
+    "kitSurface",
+    "apiSurface",
+    "mcpSurface",
+    "cliSurface",
+    "skillsSurface",
+    "sdkSurface",
+    "docsSurface",
+    "frameworkMarketReview",
+    "standardsInteropReview",
+    "marketRevisitCadence",
+    "iaCanonical",
+    "gatewayKitNoSubmit",
+    "signerFundingBoundary",
+    "mainnetRealFunds",
+    "receiptsMonitoring",
+    "recoveryPath",
+    "riskApproval",
+    "venueAdmission",
+    "sentinelSecurityReview",
+    "withdrawRevokeClosePath"
+  ],
+  "targetFamilies": [
+    {
+      "familyId": "earn_lending",
+      "label": "Earn / lending",
+      "primitiveCount": 16,
+      "effectCounts": {
+        "read": 1,
+        "value": 15,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "kamino",
+      "secondaryOrWatchlist": [
+        "marginfi"
+      ],
+      "extraMainnetEvidenceRecords": 16,
+      "mainnetEvidenceRecords": 32,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "perps",
+      "label": "Perpetual futures",
+      "primitiveCount": 14,
+      "effectCounts": {
+        "read": 6,
+        "value": 8,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "pacifica",
+      "secondaryOrWatchlist": [
+        "drift-watchlist"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 14,
+      "currentReadiness": "integration_ready",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "swap_route",
+      "label": "Basic trade, swap, and routing",
+      "primitiveCount": 9,
+      "effectCounts": {
+        "read": 3,
+        "value": 6,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "jupiter",
+      "secondaryOrWatchlist": [
+        "orca-via-jupiter",
+        "raydium-via-jupiter"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 9,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "advanced_orders_dca",
+      "label": "Advanced orders and DCA",
+      "primitiveCount": 7,
+      "effectCounts": {
+        "read": 1,
+        "value": 6,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "jupiter",
+      "secondaryOrWatchlist": [
+        "phoenix-watchlist",
+        "openbook-watchlist"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 7,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "token_ops",
+      "label": "Basic commerce, token operations, issuance, and admin",
+      "primitiveCount": 14,
+      "effectCounts": {
+        "read": 1,
+        "value": 5,
+        "authority": 3,
+        "admin": 5,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "spl-token+system-program",
+      "secondaryOrWatchlist": [
+        "token-2022"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 14,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "wallet_session_funding",
+      "label": "Wallet, session, and funding control",
+      "primitiveCount": 13,
+      "effectCounts": {
+        "read": 2,
+        "value": 0,
+        "authority": 11,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "swig",
+      "secondaryOrWatchlist": [
+        "native-solana-wallets",
+        "spl-token"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 13,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "staking",
+      "label": "Staking",
+      "primitiveCount": 12,
+      "effectCounts": {
+        "read": 1,
+        "value": 9,
+        "authority": 2,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "jito",
+      "secondaryOrWatchlist": [
+        "marinade"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 12,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "vault",
+      "label": "Vault infrastructure",
+      "primitiveCount": 4,
+      "effectCounts": {
+        "read": 0,
+        "value": 4,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "kamino-vaults",
+      "secondaryOrWatchlist": [
+        "marginfi-watchlist",
+        "kamino-variants"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 4,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "market_data",
+      "label": "Market data, discovery, and safety reads",
+      "primitiveCount": 9,
+      "effectCounts": {
+        "read": 9,
+        "value": 0,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "birdeye+rugcheck",
+      "secondaryOrWatchlist": [
+        "dexscreener",
+        "jupiter",
+        "pyth"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 9,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    },
+    {
+      "familyId": "balance_simulate_compare",
+      "label": "Balance, simulate, and compare",
+      "primitiveCount": 3,
+      "effectCounts": {
+        "read": 3,
+        "value": 0,
+        "authority": 0,
+        "admin": 0,
+        "composition": 0
+      },
+      "primaryVenueOrProvider": "jupiter+venue-sol-feeds",
+      "secondaryOrWatchlist": [
+        "birdeye",
+        "pyth"
+      ],
+      "extraMainnetEvidenceRecords": 0,
+      "mainnetEvidenceRecords": 3,
+      "currentReadiness": "canonical",
+      "currentGreenState": "not_green",
+      "targetReadiness": "battle_tested",
+      "targetGreenState": "green"
+    }
+  ],
+  "targetFamilyCount": 10,
+  "targetPrimitiveCount": 101,
+  "valuePrimitiveCount": 53,
+  "readPrimitiveCount": 27,
+  "authorityPrimitiveCount": 16,
+  "adminPrimitiveCount": 5,
+  "mainnetEvidenceRecordTarget": 117,
+  "testBlocks": [
+    {
+      "blockId": "catalog_scope_lock",
+      "label": "Catalog, IA, readiness, and Phase 2 boundary",
+      "requiredCount": 50,
+      "basis": "Family scope, aliases, phase boundaries, green-state fail-closed rules."
+    },
+    {
+      "blockId": "developer_surface_parity",
+      "label": "Kit/API/MCP/CLI/Skills/SDK/docs surface parity",
+      "requiredCount": 111,
+      "basis": "101 primitive surface tests plus 10 family surface projection tests."
+    },
+    {
+      "blockId": "venue_sentinel_risk_admission",
+      "label": "Venue_SOL, Sentinel, Risk admission",
+      "requiredCount": 90,
+      "basis": "10 families x 9 admission, security, and risk checks."
+    },
+    {
+      "blockId": "network_no_submit_contracts",
+      "label": "Network_SOL adapter no-submit contracts",
+      "requiredCount": 303,
+      "basis": "101 primitives x 3 no-submit, shape, and idempotency checks."
+    },
+    {
+      "blockId": "runtime_control_plane",
+      "label": "Identity, Orchestrator, Receipt, Pricing control plane",
+      "requiredCount": 202,
+      "basis": "101 primitives x 2 authz, receipt, and pricing checks."
+    },
+    {
+      "blockId": "mainnet_canary_evidence",
+      "label": "Mainnet real-funds or funded-account canary evidence",
+      "requiredCount": 117,
+      "basis": "101 primary venue records plus 16 extra Earn Marginfi records."
+    },
+    {
+      "blockId": "monitoring_recovery_incident_path",
+      "label": "Monitoring, recovery, revoke, withdraw/close, incident path",
+      "requiredCount": 111,
+      "basis": "101 primitive recovery/monitor checks plus 10 family incident-path checks."
+    },
+    {
+      "blockId": "publish_deploy_no_overclaim",
+      "label": "Publish, no-overclaim, deploy, and evidence-link checks",
+      "requiredCount": 84,
+      "basis": "Public copy, manifests, gateway discovery, Kit release, CI/deploy evidence."
+    }
+  ],
+  "totalRequiredTestCheckCount": 1068,
+  "phase2Hold": {
+    "familyIds": [
+      "options",
+      "prediction_markets",
+      "nft",
+      "governance",
+      "claims",
+      "lp_liquidity",
+      "bridge_wrap",
+      "commerce_billing"
+    ],
+    "primitiveCount": 67,
+    "compositionLayerIds": [
+      "service_catalog",
+      "product_catalog",
+      "future_agentic_layer"
+    ],
+    "compositionTermCount": 45,
+    "rule": "Phase 2 entries remain proposed/canonical catalog terms only until IA, Venue_SOL, Sentinel, Risk, Legal/Compliance, and Kit contract gates promote them.",
+    "publicExecutableCount": 0,
+    "greenCount": 0
+  },
+  "classAGates": [
+    "fund-phase-1-canary-wallets",
+    "approve-real-funds-execution-caps-per-family",
+    "approve-production-value-transaction-rail-deploy",
+    "configure-production-signer-and-secret-boundaries",
+    "approve-public-battle-tested-or-pre-eminent-claims"
+  ]
+}

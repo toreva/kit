@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toreva perps fee calculator</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 32px;
+        max-width: 760px;
+        line-height: 1.45;
+      }
+      label {
+        display: block;
+        margin-top: 16px;
+        font-weight: 600;
+      }
+      input {
+        box-sizing: border-box;
+        margin-top: 4px;
+        padding: 8px;
+        width: 100%;
+      }
+      table {
+        border-collapse: collapse;
+        margin-top: 24px;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: right;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Toreva perps fee calculator</h1>
+    <p>
+      Simple open-fee comparison. It does not include funding, spread, price
+      impact, close-side slippage, routing health, or venue-specific discounts.
+    </p>
+
+    <label>
+      Notional per open, USD
+      <input id="notional" type="number" min="0" step="1" value="1000" />
+    </label>
+    <label>
+      Opens per day
+      <input id="opens" type="number" min="0" step="1" value="100" />
+    </label>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Route</th>
+          <th>Open fee</th>
+          <th>Daily fee</th>
+          <th>Annual fee</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <script>
+      const routes = [
+        ["Toreva", 2],
+        ["Pacifica direct", 4],
+        ["Drift direct", 3.5],
+        ["Jupiter Perps direct", 6],
+        ["Flash direct", 4],
+      ];
+
+      function money(value) {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 2,
+        }).format(value);
+      }
+
+      function render() {
+        const notional = Number(document.getElementById("notional").value || 0);
+        const opens = Number(document.getElementById("opens").value || 0);
+        document.getElementById("rows").innerHTML = routes
+          .map(([name, bps]) => {
+            const fee = (notional * bps) / 10000;
+            const daily = fee * opens;
+            const annual = daily * 365;
+            return `<tr><td>${name} (${bps} bps)</td><td>${money(fee)}</td><td>${money(daily)}</td><td>${money(annual)}</td></tr>`;
+          })
+          .join("");
+      }
+
+      document.getElementById("notional").addEventListener("input", render);
+      document.getElementById("opens").addEventListener("input", render);
+      render();
+    </script>
+  </body>
+</html>

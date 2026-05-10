@@ -32,9 +32,15 @@ export interface EarnCompareResult {
   ok: boolean;
   venue: EarnCompareVenue;
   asset: EarnCompareAsset;
-  apyPct: number;
+  /**
+   * Annualised yield percentage. May be `null` for venues whose on-chain
+   * APY decoding is pending — see `apyNote`. Caller should handle `null`
+   * before formatting.
+   */
+  apyPct: number | null;
   apyBasePct?: number | null;
   apyRewardPct?: number | null;
+  apyNote?: string;
   tvlUsd?: number | null;
   underlyingTokens?: string[];
   chain?: string;
@@ -49,6 +55,15 @@ export interface EarnCompareResult {
   primitiveId: string;
   operation: string;
   latencyMs?: number;
+  // Marginfi-specific fields (optional):
+  bankAccount?: string;
+  bankOwner?: string;
+  bankExecutable?: boolean;
+  bankLamports?: number;
+  bankRentEpoch?: number;
+  bankDataByteLen?: number;
+  bankDataSha256?: string;
+  slot?: number;
 }
 
 export interface EarnCompareOptions {

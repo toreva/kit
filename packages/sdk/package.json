@@ -1,6 +1,6 @@
 {
   "name": "@toreva/sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MCP-native Solana primitive platform. R1 (today): read-only Kamino + Marginfi APY compare and SPL token receive detection. R2-R5: family-by-family rollout. See toreva.com/operational-matrix for current state.",
   "keywords": [
     "solana", "defi", "kamino", "marginfi", "spl-token",

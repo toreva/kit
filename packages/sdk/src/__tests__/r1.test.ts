@@ -166,12 +166,17 @@ describe('earnCompare', () => {
 // ---------------------------------------------------------------------------
 
 describe('tokenReceive', () => {
-  const baseResult: TokenReceiveResult = {
+  // The MCP structured payload uses the canonical names (walletAddress,
+  // events, totalSignatureCountReturned). The SDK normalises to ergonomic
+  // aliases (wallet, receives, count) on top.
+  const mcpStructuredPayload = {
     ok: true,
-    wallet: 'TestWallet1111111111111111111111111111111111',
-    receives: [
+    walletAddress: 'TestWallet1111111111111111111111111111111111',
+    inspectedSignatureCount: 1,
+    totalSignatureCountReturned: 1,
+    events: [
       {
-        signature: '4xF2...sig',
+        signature: '4xF2sig',
         mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         amount: 100,
         decimals: 6,
@@ -180,7 +185,7 @@ describe('tokenReceive', () => {
         slot: 418_488_700,
       },
     ],
-    count: 1,
+    splTokenProgramId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
     source: 'solana-rpc',
     fetchedAt: '2026-05-10T12:20:09.082Z',
     evidenceRef: {
@@ -194,16 +199,26 @@ describe('tokenReceive', () => {
     operation: 'scan',
     latencyMs: 600,
   };
+  const baseResult = mcpStructuredPayload as unknown as TokenReceiveResult;
 
-  it('returns the canonical TokenReceiveResult shape', async () => {
-    const fetchImpl = makeMockFetch(baseResult);
+  it('returns the canonical TokenReceiveResult shape with ergonomic aliases', async () => {
+    const fetchImpl = makeMockFetch(mcpStructuredPayload);
     const r = await tokenReceive(
-      { wallet: baseResult.wallet, limit: 10 },
+      { wallet: mcpStructuredPayload.walletAddress, limit: 10 },
       { fetchImpl: fetchImpl as unknown as typeof fetch }
     );
     expect(r.ok).toBe(true);
-    expect(r.wallet).toBe(baseResult.wallet);
+    // Both canonical + alias surfaces resolve to the same wallet.
+    expect(r.wallet).toBe(mcpStructuredPayload.walletAddress);
+    expect(r.walletAddress).toBe(mcpStructuredPayload.walletAddress);
+    // events / receives are aliases of the same array.
+    expect(Array.isArray(r.events)).toBe(true);
     expect(Array.isArray(r.receives)).toBe(true);
+    expect(r.events).toEqual(r.receives);
+    // count alias resolves to totalSignatureCountReturned.
+    expect(r.count).toBe(1);
+    expect(r.totalSignatureCountReturned).toBe(1);
+    expect(r.inspectedSignatureCount).toBe(1);
     expect(r.evidenceRef.sentinelReviewReceiptId).toMatch(/SENT-REVIEW/);
     expect(r.familyId).toBe('token_ops');
     expect(r.tool).toBe('toreva_token_receive_scan');
@@ -219,26 +234,54 @@ describe('tokenReceive', () => {
     ).rejects.toThrow(/wallet/);
   });
 
-  it('rejects out-of-range limit', async () => {
-    const fetchImpl = makeMockFetch(baseResult);
+  it('rejects out-of-range limit (> 25)', async () => {
+    const fetchImpl = makeMockFetch(mcpStructuredPayload);
     await expect(
       tokenReceive(
-        { wallet: baseResult.wallet, limit: 9999 },
+        { wallet: mcpStructuredPayload.walletAddress, limit: 9999 },
         { fetchImpl: fetchImpl as unknown as typeof fetch }
       )
     ).rejects.toThrow(/limit/);
   });
 
-  it('passes wallet + limit through to MCP arguments', async () => {
-    const fetchImpl = makeMockFetch(baseResult);
+  it('passes walletAddress (live MCP arg name) + limit through to MCP arguments', async () => {
+    const fetchImpl = makeMockFetch(mcpStructuredPayload);
     await tokenReceive(
-      { wallet: baseResult.wallet, limit: 5 },
+      { wallet: mcpStructuredPayload.walletAddress, limit: 5 },
       { fetchImpl: fetchImpl as unknown as typeof fetch }
     );
     const call = (fetchImpl as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = JSON.parse((call?.[1] as RequestInit)?.body as string);
     expect(body.params.name).toBe('toreva_token_receive_scan');
-    expect(body.params.arguments).toEqual({ wallet: baseResult.wallet, limit: 5 });
+    // The SDK accepts ergonomic `wallet` from the caller but sends the
+    // canonical `walletAddress` to the live MCP tool.
+    expect(body.params.arguments).toEqual({
+      walletAddress: mcpStructuredPayload.walletAddress,
+      limit: 5,
+    });
+  });
+
+  it('surfaces MCP isError payloads with the upstream error message', async () => {
+    const errPayload = {
+      error: 'walletAddress (string, base58 Solana pubkey) is required.',
+      code: 'INVALID_INPUT',
+      field: 'walletAddress',
+    };
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        jsonrpc: '2.0',
+        id: 1,
+        result: { structuredContent: errPayload, isError: true },
+      }),
+    } as unknown as Response);
+    await expect(
+      tokenReceive(
+        { wallet: 'irrelevant' },
+        { fetchImpl: fetchImpl as unknown as typeof fetch }
+      )
+    ).rejects.toThrow(/walletAddress.*required/);
   });
 });
 

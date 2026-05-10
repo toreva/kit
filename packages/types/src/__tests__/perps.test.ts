@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { perpsToolSchemas, PERPS_RELAY_TYPES } from '../perps.js';
+import {
+  PERPS_RELAY_TYPES,
+  perpsExecutionResultSchema,
+  perpsQueryResultSchema,
+  perpsResultSchemas,
+  perpsToolSchemas,
+} from '../perps.js';
 
 describe('perpsToolSchemas', () => {
   describe('toreva_perps_long', () => {
@@ -71,5 +77,38 @@ describe('PERPS_RELAY_TYPES', () => {
     const relayKeys = Object.keys(PERPS_RELAY_TYPES).sort();
     expect(schemaKeys).toEqual(relayKeys);
     expect(schemaKeys).toHaveLength(13);
+  });
+});
+
+describe('perps result schemas', () => {
+  it('parses execution results with the fields external integrators need to monitor and close', () => {
+    const result = perpsExecutionResultSchema.safeParse({
+      venue: 'pacifica',
+      positionId: 'position-1',
+      orderId: 'order-1',
+      averagePrice: '142.12',
+      receiptId: 'receipt-1',
+      requestHash: 'request-hash',
+      responseHash: 'response-hash',
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('parses query results for venues, positions, funding, markets, simulation, and explain', () => {
+    const result = perpsQueryResultSchema.safeParse({
+      venues: [{ venue: 'pacifica', status: 'available' }],
+      positions: [{ positionId: 'position-1' }],
+      funding: [{ token: 'SOL', rateBps: 1.2 }],
+      markets: [{ token: 'SOL' }],
+      simulation: { estimatedFeeUsd: 0.01 },
+      explanation: 'Routed by best estimated all-in cost.',
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('exports one result schema for every public perps tool', () => {
+    expect(Object.keys(perpsResultSchemas).sort()).toEqual(Object.keys(perpsToolSchemas).sort());
   });
 });

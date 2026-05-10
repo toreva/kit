@@ -3,6 +3,9 @@ export interface FeeSchedule {
   strategyRebalanceBps: number;
   strategyExecutionBps: number;
   perpsOpenBps: number;
+  dataTransactionBps: number;
+  valueTransactionBps: number;
+  firstPartyValueBps: number;
 }
 
 export interface TreasuryConfig {
@@ -12,8 +15,11 @@ export interface TreasuryConfig {
 }
 
 export const FEE_SCHEDULE: FeeSchedule = {
-  earnStakeBps: 5,
-  strategyRebalanceBps: 37.5,
-  strategyExecutionBps: 75,
-  perpsOpenBps: 1
+  earnStakeBps: 2,
+  strategyRebalanceBps: 2,
+  strategyExecutionBps: 2,
+  perpsOpenBps: 2,
+  dataTransactionBps: 0,
+  valueTransactionBps: 2,
+  firstPartyValueBps: 2
 };

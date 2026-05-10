@@ -1,11 +1,10 @@
 import { z } from 'zod';
 
+const walletAddressSchema = z.string().min(32).max(88);
 const baseIntentInputSchema = z.object({
-  wallet: z.string(),
+  walletAddress: walletAddressSchema,
   prompt: z.string().min(1)
 });
-
-const walletAddressSchema = z.string().min(32).max(88);
 const signerKindSchema = z.enum([
   'delegated_authority',
   'human_wallet',
@@ -28,20 +27,23 @@ const establishCapabilitySchema = z.object({
   provider_metadata: z.record(z.unknown()).optional()
 });
 
+const establishSchema = z.object({
+  walletAddress: walletAddressSchema,
+  prompt: z.string().min(1).optional(),
+  agent_authority: z.object({
+    delegation_provider: z.string().min(1).default('swig'),
+    network: z.string().min(1).default('solana'),
+    signer_kind: signerKindSchema.optional(),
+    policy_id: z.string().optional(),
+    policy_hash: z.string().optional(),
+    provider_metadata: z.record(z.unknown()).optional()
+  }).optional(),
+  capabilities: z.array(establishCapabilitySchema).optional()
+});
+
 export const intentToolSchemas = {
-  toreva_establish: z.object({
-    walletAddress: walletAddressSchema,
-    prompt: z.string().min(1).optional(),
-    agent_authority: z.object({
-      delegation_provider: z.string().min(1).default('swig'),
-      network: z.string().min(1).default('solana'),
-      signer_kind: signerKindSchema.optional(),
-      policy_id: z.string().optional(),
-      policy_hash: z.string().optional(),
-      provider_metadata: z.record(z.unknown()).optional()
-    }).optional(),
-    capabilities: z.array(establishCapabilitySchema).optional()
-  }),
+  toreva_establish: establishSchema,
+  toreva_perps_establish: establishSchema,
   toreva_scan: baseIntentInputSchema,
   toreva_simulate: baseIntentInputSchema,
   toreva_execute: baseIntentInputSchema,
@@ -53,6 +55,7 @@ export const intentToolSchemas = {
 
 export const INTENT_RELAY_TYPES = {
   toreva_establish: 'intent.establish',
+  toreva_perps_establish: 'intent.establish',
   toreva_scan: 'intent.scan',
   toreva_simulate: 'intent.simulate',
   toreva_execute: 'intent.execute',

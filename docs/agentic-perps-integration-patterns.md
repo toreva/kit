@@ -5,7 +5,7 @@ consumer website keeps Day-1 surfaces intentionally narrow.
 
 Toreva provides non-custodial execution primitives for Solana with
 best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade.
-Perps opens are charged at 1 bps by Toreva. Lifecycle verbs are free.
+External value transactions are charged at 2 bps by Toreva. Data and control reads are free; lifecycle value changes follow their primitive fee classification.
 
 This page is for builders integrating through API, CLI, SDK, Skills, or MCP.
 It is execution infrastructure, not financial advice or strategy advice.
@@ -51,6 +51,12 @@ Content-Type: application/json
 MCP clients call the same `toolName` with the same payload. SDK clients call
 `client.relay(...)` or `perps.call(...)` and the SDK creates this envelope.
 
+`requestId` is the relay-level idempotency key. Use a unique value per logical
+Toreva request and reuse it only when retrying the exact same request.
+`clientRequestId` lives inside execution payloads and is forwarded to the
+downstream adapter or venue when supported. Use it to correlate orders, fills,
+receipts, and monitoring records after the relay call has been accepted.
+
 Do not use old field aliases for perps. Use these Gateway MCP fields:
 
 | Old alias | Canonical field |
@@ -76,6 +82,10 @@ material. Public keys, signer references, and receipt IDs are acceptable.
 ## Exact Payloads
 
 ### 1. Establish Swig Master And Pacifica Child Capability
+
+Use `toreva_establish` for the canonical cross-domain intent. Perps-first
+agents can use `toreva_perps_establish`; it maps to the same `intent.establish`
+relay type and schema.
 
 ```json
 {
@@ -112,6 +122,19 @@ material. Public keys, signer references, and receipt IDs are acceptable.
         }
       }
     ]
+  }
+}
+```
+
+Perps-family alias:
+
+```json
+{
+  "type": "intent.establish",
+  "toolName": "toreva_perps_establish",
+  "requestId": "establish-perps-001",
+  "payload": {
+    "walletAddress": "<human-wallet>"
   }
 }
 ```
@@ -310,6 +333,38 @@ toreva perps toreva_perps_simulate '{"walletAddress":"<human-wallet>","token":"S
 toreva perps toreva_perps_long '{"walletAddress":"<human-wallet>","token":"SOL","sizeUsd":180,"leverage":1.2,"collateralToken":"USDC","collateralAmount":150}'
 ```
 
+## Server-Side Python Pattern
+
+There is no Python package yet. Until the thin Python SDK lands, call the relay
+directly and keep schema validation close to the payload builder:
+
+```python
+import os
+import uuid
+
+import httpx
+
+token = os.environ["TOREVA_AUTH_TOKEN"]
+
+payload = {
+    "type": "perps.query_venues",
+    "toolName": "toreva_perps_query_venues",
+    "requestId": f"query-venues-{uuid.uuid4()}",
+    "payload": {},
+}
+
+response = httpx.post(
+    "https://gateway.toreva.com/relay",
+    headers={"Authorization": f"Bearer {token}"},
+    json=payload,
+    timeout=30,
+)
+response.raise_for_status()
+data = response.json()
+if not data.get("ok"):
+    raise RuntimeError(data)
+```
+
 ## SDK Pattern
 
 ```ts
@@ -401,3 +456,22 @@ availability, production limits, venue enablement, and real-funds canaries are
 controlled by Toreva policy, approvals, and deployment state. Do not claim that
 a strategy is battle-tested, mainnet operational, or safe for customer funds
 unless the corresponding receipts and approval records exist.
+
+## Live / Canary Enablement
+
+Moving from simulation to real-funds execution is intentionally approval-gated.
+The normal path is:
+
+1. Establish the agent authority and child capability with conservative
+   guardrails.
+2. Run `toreva_perps_query_venues` and `toreva_perps_simulate` successfully.
+3. Request canary enablement from your Toreva contact with wallet public key,
+   desired markets, maximum notional, maximum leverage, and monitoring contact.
+4. Toreva configures signer boundaries, funding caps, venue enablement, and
+   receipt requirements.
+5. Execute one tiny canary; monitor order, fill, position, funding, close,
+   balance reconciliation, withdrawal, and revocation receipts.
+6. Raise limits only through a new approval.
+
+Do not send raw private keys, seed phrases, API secrets, or signer material in
+the enablement request.

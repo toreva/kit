@@ -2,7 +2,7 @@
   "name": "@toreva/mcp",
   "version": "0.1.2",
   "mcpName": "io.github.toreva/kit",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. Data transactions are free. External value transactions are 2 bps.",
   "keywords": [
     "solana",
     "defi",
@@ -13,6 +13,10 @@
     "jupiter",
     "drift",
     "execution-primitives",
+    "solana-perps",
+    "agent-execution",
+    "agent-skills",
+    "aio",
     "mcp",
     "agent"
   ],

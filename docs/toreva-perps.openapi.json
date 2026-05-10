@@ -3,7 +3,7 @@
   "info": {
     "title": "Toreva Agentic Perps Relay",
     "version": "0.1.0",
-    "description": "Public relay packet for Toreva establish and perps agent integrations. Toreva Kit is the public source of truth while consumer website docs remain intentionally narrow."
+    "description": "Public relay packet for Toreva establish and perps agent integrations. Toreva Kit is the public source of truth while consumer website docs remain intentionally narrow. Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. Data transactions are free. External value transactions are 2 bps."
   },
   "servers": [
     {
@@ -69,6 +69,17 @@
                           }
                         }
                       ]
+                    }
+                  }
+                },
+                "perps_establish": {
+                  "summary": "Perps-family alias for establish",
+                  "value": {
+                    "type": "intent.establish",
+                    "toolName": "toreva_perps_establish",
+                    "requestId": "establish-perps-alias-001",
+                    "payload": {
+                      "walletAddress": "11111111111111111111111111111111"
                     }
                   }
                 },
@@ -221,7 +232,14 @@
         },
         "responses": {
           "200": {
-            "description": "Relay accepted and returned a typed result or typed error."
+            "description": "Relay accepted and returned a typed result or typed error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelayResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -251,13 +269,221 @@
           },
           "requestId": {
             "type": "string",
-            "description": "Idempotency key supplied by the caller."
+            "description": "Relay-level idempotency key. Reuse only when retrying the exact same request."
           },
           "payload": {
             "type": "object"
           }
         },
         "additionalProperties": false
+      },
+      "RelayError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "category"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/RelayErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "auth",
+              "validation",
+              "guardrail",
+              "venue",
+              "idempotency",
+              "rate_limit",
+              "system"
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
+      "RelayErrorCode": {
+        "type": "string",
+        "enum": [
+          "AUTH_INVALID",
+          "AUTH_EXPIRED",
+          "AUTH_FORBIDDEN",
+          "BAD_REQUEST",
+          "VALIDATION_FAILED",
+          "GUARDRAIL_REJECTED",
+          "VENUE_UNAVAILABLE",
+          "VENUE_REJECTED",
+          "INSUFFICIENT_COLLATERAL",
+          "SLIPPAGE_EXCEEDED",
+          "IDEMPOTENT_REPLAY",
+          "RATE_LIMITED",
+          "RELAY_TIMEOUT",
+          "INTERNAL_ERROR"
+        ]
+      },
+      "RelayResponse": {
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "result": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EstablishResult"
+              },
+              {
+                "$ref": "#/components/schemas/PerpsExecutionResult"
+              },
+              {
+                "$ref": "#/components/schemas/PerpsQueryResult"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "error": {
+            "type": "string"
+          },
+          "errorCode": {
+            "$ref": "#/components/schemas/RelayErrorCode"
+          },
+          "errorDetail": {
+            "$ref": "#/components/schemas/RelayError"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "requestId": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EstablishResult": {
+        "type": "object",
+        "properties": {
+          "authorityId": {
+            "type": "string"
+          },
+          "grantId": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "receiptId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "PerpsExecutionResult": {
+        "type": "object",
+        "properties": {
+          "venue": {
+            "type": "string"
+          },
+          "positionId": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "txSignature": {
+            "type": "string"
+          },
+          "receiptId": {
+            "type": "string"
+          },
+          "averagePrice": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "entryPrice": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "liquidationPrice": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "requestHash": {
+            "type": "string"
+          },
+          "responseHash": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "PerpsQueryResult": {
+        "type": "object",
+        "properties": {
+          "venues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "positions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "funding": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
       }
     }
   }

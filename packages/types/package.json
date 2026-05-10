@@ -1,10 +1,11 @@
 {
   "name": "@toreva/types",
   "version": "0.1.1",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. Data transactions are free. External value transactions are 2 bps.",
   "keywords": [
     "solana", "defi", "perps", "perpetual-futures", "yield",
     "non-custodial", "jupiter", "drift", "execution-primitives",
+    "solana-perps", "agent-execution", "agent-skills", "aio",
     "typescript", "types"
   ],
   "repository": {

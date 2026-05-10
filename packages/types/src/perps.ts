@@ -79,3 +79,50 @@ export const PERPS_RELAY_TYPES = {
 
 export type PerpsToolName = keyof typeof perpsToolSchemas;
 export type PerpsRelayType = (typeof PERPS_RELAY_TYPES)[PerpsToolName];
+
+const priceSchema = z.union([z.number(), z.string()]);
+
+export const perpsExecutionResultSchema = z.object({
+  venue: venueSchema.or(z.string()).optional(),
+  positionId: z.string().optional(),
+  orderId: z.string().optional(),
+  txSignature: z.string().optional(),
+  receiptId: z.string().optional(),
+  averagePrice: priceSchema.optional(),
+  entryPrice: priceSchema.optional(),
+  liquidationPrice: priceSchema.optional(),
+  requestHash: z.string().optional(),
+  responseHash: z.string().optional(),
+}).passthrough();
+
+export const perpsQueryResultSchema = z.object({
+  venues: z.array(z.record(z.unknown())).optional(),
+  positions: z.array(z.record(z.unknown())).optional(),
+  funding: z.array(z.record(z.unknown())).optional(),
+  markets: z.array(z.record(z.unknown())).optional(),
+  simulation: z.record(z.unknown()).optional(),
+  explanation: z.union([z.string(), z.record(z.unknown())]).optional(),
+}).passthrough();
+
+export const perpsResultSchemas = {
+  toreva_perps_long: perpsExecutionResultSchema,
+  toreva_perps_short: perpsExecutionResultSchema,
+  toreva_perps_close: perpsExecutionResultSchema,
+  toreva_perps_add_margin: perpsExecutionResultSchema,
+  toreva_perps_remove_margin: perpsExecutionResultSchema,
+  toreva_perps_cancel_order: perpsExecutionResultSchema,
+  toreva_perps_funding_settle: perpsExecutionResultSchema,
+  toreva_perps_query_position: perpsQueryResultSchema,
+  toreva_perps_query_funding: perpsQueryResultSchema,
+  toreva_perps_query_venues: perpsQueryResultSchema,
+  toreva_perps_query_markets: perpsQueryResultSchema,
+  toreva_perps_simulate: perpsQueryResultSchema,
+  toreva_perps_explain: perpsQueryResultSchema
+} as const;
+
+export type PerpsToolInput<TToolName extends PerpsToolName> = z.infer<
+  (typeof perpsToolSchemas)[TToolName]
+>;
+export type PerpsToolResult<TToolName extends PerpsToolName> = z.infer<
+  (typeof perpsResultSchemas)[TToolName]
+>;

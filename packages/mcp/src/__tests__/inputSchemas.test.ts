@@ -29,10 +29,18 @@ describe('inputSchemas — typed per tool', () => {
     expect(schema.properties).toHaveProperty('agent_authority');
   });
 
-  it('toreva_scan inputSchema has required=[wallet, prompt]', async () => {
+  it('toreva_perps_establish exposes the same establish input contract', async () => {
+    const tools = await listTools();
+    const schema = findTool(tools, 'toreva_perps_establish').inputSchema as any;
+    expect(schema.required).toEqual(['walletAddress']);
+    expect(schema.properties).toHaveProperty('capabilities');
+    expect(schema.properties).toHaveProperty('agent_authority');
+  });
+
+  it('toreva_scan inputSchema has required=[walletAddress, prompt]', async () => {
     const tools = await listTools();
     const schema = findTool(tools, 'toreva_scan').inputSchema;
-    expect(schema.required).toEqual(expect.arrayContaining(['wallet', 'prompt']));
+    expect(schema.required).toEqual(expect.arrayContaining(['walletAddress', 'prompt']));
     expect(schema.required).toHaveLength(2);
   });
 

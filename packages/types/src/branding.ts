@@ -14,4 +14,4 @@ export const TOREVA_VENUES: readonly VenueInfo[] = [
 ] as const;
 
 export const CANONICAL_TAGLINE =
-  'Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.';
+  'Non-custodial execution primitives for Solana. Best-execution routing across Solana venues. Data transactions are free. External value transactions are 2 bps.';

@@ -16,8 +16,9 @@ MCP, Skills, CLI, and API contract surface.
 
 Build a Toreva integration that:
 
-1. Calls toreva_establish to bind a human wallet to a Toreva/Swig master
-   authority and a Pacifica child perps capability.
+1. Calls toreva_establish, or the alias toreva_perps_establish, to bind a
+   human wallet to a Toreva/Swig master authority and a Pacifica child perps
+   capability.
 2. Calls toreva_perps_query_venues and toreva_perps_simulate before execution.
 3. Opens positions with toreva_perps_long or toreva_perps_short using:
    walletAddress, token, sizeUsd, leverage, collateralToken, collateralAmount.

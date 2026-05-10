@@ -15,9 +15,9 @@ describe('createServer', () => {
     throw new Error('Could not find tools/list handler on server');
   }
 
-  it('registers exactly 25 tools', async () => {
+  it('registers exactly 26 tools', async () => {
     const tools = await listTools();
-    expect(tools).toHaveLength(25);
+    expect(tools).toHaveLength(26);
   });
 
   it('all tool names start with toreva_', async () => {

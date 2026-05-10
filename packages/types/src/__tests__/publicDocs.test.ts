@@ -30,6 +30,7 @@ describe('public perps docs', () => {
 
     expect(Object.keys(examples)).toEqual(expect.arrayContaining([
       'establish',
+      'perps_establish',
       'query_venues',
       'simulate',
       'perps_long',
@@ -57,6 +58,27 @@ describe('public perps docs', () => {
     }
   });
 
+  it('OpenAPI documents relay error and result response schemas', () => {
+    const doc = JSON.parse(readRootFile('docs/toreva-perps.openapi.json'));
+    const schemas = doc.components.schemas;
+
+    expect(schemas.RelayResponse.properties.errorCode.$ref).toBe('#/components/schemas/RelayErrorCode');
+    expect(schemas.RelayResponse.properties.errorDetail.$ref).toBe('#/components/schemas/RelayError');
+    expect(schemas.RelayResponse.properties.result.oneOf.map((entry: { $ref?: string }) => entry.$ref)).toEqual(
+      expect.arrayContaining([
+        '#/components/schemas/EstablishResult',
+        '#/components/schemas/PerpsExecutionResult',
+        '#/components/schemas/PerpsQueryResult'
+      ])
+    );
+    expect(schemas.RelayErrorCode.enum).toEqual(expect.arrayContaining([
+      'GUARDRAIL_REJECTED',
+      'VENUE_UNAVAILABLE',
+      'IDEMPOTENT_REPLAY'
+    ]));
+    expect(schemas.PerpsExecutionResult.properties).toHaveProperty('averagePrice');
+  });
+
   it('public examples do not publish legacy perps aliases', () => {
     const files = [
       readRootFile('examples/open-perps-position/index.ts'),
@@ -82,5 +104,14 @@ describe('public perps docs', () => {
       'apisecret',
       'api_secret'
     ]));
+  });
+
+  it('public docs keep the canonical public discovery pointers in repo-local guidance', () => {
+    const doc = readRootFile('docs/public-discovery.md');
+
+    expect(doc).toContain('https://mcp.toreva.com');
+    expect(doc).toContain('https://gateway.toreva.com/openapi.json');
+    expect(doc).toContain('https://gateway.toreva.com/.well-known/toreva-kit.json');
+    expect(doc).toContain('https://gateway.toreva.com/relay/tools');
   });
 });

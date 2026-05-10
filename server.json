@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.toreva/kit",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Solana venues. Data/read transactions are 0 bps. Value-moving transactions are 2 bps.",
   "repository": {
     "url": "https://github.com/toreva/kit",
     "source": "github"

@@ -49,7 +49,25 @@ Objective IDs: see `coordinator/bus/registries/system-objectives.v1.json` (OBJ-0
 
 Curated Pareto entries — keep top ~20 by utility. Overflow migrates to **Superseded / retired**.
 
-_No entries yet — file initialised 2026-04-13._
+```yaml
+- id: mem.kit.20260506.python-integrator-response-contracts
+  title: Python integrators need generated SDKs and typed relay results
+  type: lesson
+  captured: 2026-05-06
+  source: codex
+  objectives: [OBJ-08, OBJ-14]
+  summary: |
+    First external-style Python integration confirmed the thin relay design is
+    usable, but replaying Kit schemas manually creates avoidable risk. Keep
+    `@toreva/types`, OpenAPI, SDK, CLI, Skills, and docs aligned on typed
+    perps result schemas, structured `RelayErrorCode` values, retryability, and
+    `requestId` versus `clientRequestId` semantics. A generated Python SDK is
+    now a real developer-experience gap, not a nice-to-have.
+  applies_when: changing perps schemas, OpenAPI output, SDK generation, relay
+    response typing, error handling, or server-side integration quickstarts
+  evidence: measured
+  promote: candidate
+```
 
 ---
 

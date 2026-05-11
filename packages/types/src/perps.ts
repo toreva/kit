@@ -84,7 +84,7 @@ export type PerpsRelayType = (typeof PERPS_RELAY_TYPES)[PerpsToolName];
 // the SDK throw before these shapes are exercised — until perps execution
 // lands in R3, these are intentionally permissive.
 export type PerpsToolInput<T extends PerpsToolName = PerpsToolName> = z.input<typeof perpsToolSchemas[T]>;
-export type PerpsToolResult = {
+export type PerpsToolResult<_T extends PerpsToolName = PerpsToolName> = {
   ok: boolean;
   txSignature?: string;
   positionId?: string;

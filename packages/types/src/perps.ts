@@ -79,3 +79,16 @@ export const PERPS_RELAY_TYPES = {
 
 export type PerpsToolName = keyof typeof perpsToolSchemas;
 export type PerpsRelayType = (typeof PERPS_RELAY_TYPES)[PerpsToolName];
+
+// Generic input/result types for SDK consumers. The DISCOVERY_ONLY guards in
+// the SDK throw before these shapes are exercised — until perps execution
+// lands in R3, these are intentionally permissive.
+export type PerpsToolInput<T extends PerpsToolName = PerpsToolName> = z.input<typeof perpsToolSchemas[T]>;
+export type PerpsToolResult<_T extends PerpsToolName = PerpsToolName> = {
+  ok: boolean;
+  txSignature?: string;
+  positionId?: string;
+  evidenceRef?: { readEvidenceId?: string; venueIntelligenceReceiptId?: string; sentinelReviewReceiptId?: string };
+  error?: { code: string; message: string };
+  [key: string]: unknown;
+};

@@ -1,11 +1,11 @@
 {
   "name": "@toreva/sdk",
-  "version": "0.1.1",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "version": "0.2.1",
+  "description": "MCP-native Solana primitive platform. R1 (today): read-only Kamino + Marginfi APY compare and SPL token receive detection. R2-R5: family-by-family rollout. See toreva.com/operational-matrix for current state.",
   "keywords": [
-    "solana", "defi", "perps", "perpetual-futures", "yield",
-    "non-custodial", "jupiter", "drift", "execution-primitives",
-    "sdk"
+    "solana", "defi", "kamino", "marginfi", "spl-token",
+    "non-custodial", "mcp", "agent-execution", "agent-skills",
+    "read-only", "discovery", "earn", "lending", "apy", "sdk"
   ],
   "repository": {
     "type": "git",

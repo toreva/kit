@@ -1,11 +1,11 @@
 {
   "name": "@toreva/cli",
-  "version": "0.1.1",
-  "description": "Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.",
+  "version": "0.2.0",
+  "description": "Toreva CLI — MCP-native Solana primitive platform. R1: earn-compare and token-receive read-only commands callable against mcp.toreva.com. See toreva.com/operational-matrix.",
   "keywords": [
-    "solana", "defi", "perps", "perpetual-futures", "yield",
-    "non-custodial", "jupiter", "drift", "execution-primitives",
-    "cli"
+    "solana", "defi", "kamino", "marginfi", "spl-token",
+    "non-custodial", "mcp", "agent-execution", "agent-skills",
+    "earn", "lending", "apy", "cli"
   ],
   "repository": {
     "type": "git",

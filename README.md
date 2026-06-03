@@ -14,35 +14,39 @@ Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade.
 
 Your agent decides. Toreva executes. Every action receipted.
 
-## Agentic perps setup
+## Establish your wallet
 
-Use `toreva_establish` before perps execution when an agent needs delegated
-authority for a human wallet. The standard perps pattern is:
+Use `toreva_establish` to attach a policy-controlled delegated authority to
+your Solana wallet. Your wallet stays the root owner — Toreva creates a bounded
+session key that enforces spend caps, allowed-token constraints, and revocation
+policy. Non-custodial: Toreva never holds private key material. Every
+establishment is receipted.
 
-```text
-human wallet
-  -> Toreva/Swig master authority
-  -> venue-specific child capability
-  -> Pacifica API agent wallet when Pacifica is selected
+```bash
+# Minimum — attach delegated authority to your wallet
+toreva_establish({ walletAddress: "your-wallet-address" })
 ```
 
-The human wallet remains the root owner. The Swig authority is the policy and
-capital-management control layer. Pacifica uses a separate API agent wallet
-because Pacifica REST orders require an on-curve Ed25519 signer. Toreva can
-create, bind, fund, route, monitor, and revoke that child capability through
-Toreva surfaces; the user does not need to open Pacifica.
+Once established, your agent can execute across all supported primitives —
+earn, perps, and more — without re-authenticating for each operation.
 
-For best execution, omit `venue` on `toreva_perps_long` or
-`toreva_perps_short`. Toreva will compare enabled venues and route by estimated
-all-in cost. Set `venue` only when you intentionally want a specific venue.
-Perps tools use the Gateway MCP field contract: `walletAddress`, `token`,
-`sizeUsd`, `leverage`, `collateralToken`, and `collateralAmount`.
+## Earn
 
-The public integration packet lives in this repo:
+Deploy idle USDC to yield across supported venues with `toreva_earn`. Scan,
+compare, and execute from a single tool.
 
-- [Agentic perps integration patterns](./docs/agentic-perps-integration-patterns.md)
-- [OpenAPI-style relay examples](./docs/toreva-perps.openapi.json)
-- [Claude Code agent prompt](./docs/claude-code-agent-prompt.md)
+```bash
+npx toreva earn-compare --asset USDC --venue kamino
+npx toreva earn-compare --asset USDC --venue marginfi
+```
+
+| Venue | Asset |
+| --- | --- |
+| Kamino Finance | USDC |
+| Marginfi | USDC |
+
+Every earn execution returns a read-evidence receipt, a venue-intelligence
+receipt, and a sentinel review receipt.
 
 ## Install
 
@@ -113,6 +117,18 @@ truth for agent, SDK, CLI, Skills, and MCP integration details.
 | `TOREVA_CONFIG_DIR` | `~/.config/toreva` | Override on-disk config dir |
 
 ## Perps tools
+
+Run `toreva_establish` first to attach a delegated authority before execution.
+For best fill, omit `venue` — Toreva compares enabled venues and routes by
+estimated all-in cost. Set `venue` only when you intentionally want a specific
+venue. Perps tools use fields: `walletAddress`, `token`, `sizeUsd`, `leverage`,
+`collateralToken`, and `collateralAmount`.
+
+The public integration packet lives in this repo:
+
+- [Agentic perps integration patterns](./docs/agentic-perps-integration-patterns.md)
+- [OpenAPI-style relay examples](./docs/toreva-perps.openapi.json)
+- [Claude Code agent prompt](./docs/claude-code-agent-prompt.md)
 
 | Tool | Fee | What it does |
 | --- | --- | --- |

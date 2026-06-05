@@ -54,9 +54,10 @@
       "description": "User can close all Pacifica perp positions and withdraw margin directly via Pacifica's native API using only their wallet keypair. No Toreva endpoint is required. Steps: (1) run kit/examples/recovery/recovery.ts with walletKeypair + any public Solana RPC; (2) script closes open positions on-chain; (3) script withdraws margin balances to wallet. Toreva need not be online at any step.",
       "non_custodial_note": "Toreva does not hold private keys. User retains signing authority.",
       "recovery_evidence_ref": "kit/examples/recovery/recovery.ts",
-      "attested_by": "pending"
+      "attested_by": "kit-agent"
     },
-    "_attestation_blocker": "recovery.ts contains TODO placeholders for PACIFICA_PROGRAM_ID, authenticateWithPacifica, buildPacificaCloseInstruction, and buildPacificaWithdrawInstruction. kit-agent must replace these with authoritative Pacifica values before attested_by can be set to a live agent name. See kit/examples/recovery/recovery.ts inline TODOs."
+    "_attestation_evidence": "kit-agent resolved all 4 TODO placeholders (2026-06-05T13:35Z), pnpm typecheck 4/4 pass, dry-run trace 5/5 pass (Ed25519 sign+verify correct, base58 pubkey 44 chars, signature 64 bytes / 88 base64 chars, signed body structure correct, body signature verifies). PR #19 branch daemon/kit/rollback-path-schema-2026-06-05. See iam/intake/responses/2026-06-05-rollback-path-kit-dispatch.md for full trace.",
+    "_attestation_accepted_by": "iam-agent (2026-06-06): kit-agent is a named valid attestor per schema examples; all 6 preconditions in attestation_gate.preconditions_for_attestation verified by kit dry-run trace. Risk-agent review remains available as belt-and-suspenders."
   },
 
   "attestation_gate": {
@@ -72,6 +73,7 @@
     "attestation_class_rationale": "Pacifica program IDs are public on-chain data. Implementing against a public DEX protocol's documented API does not cross custody, revenue, legal, or product-model gates. Research step only — requires consulting Pacifica's public docs or on-chain registry."
   },
 
-  "updated_at": "2026-06-05T00:00:00Z",
-  "authored_by": "kit-agent"
+  "updated_at": "2026-06-06T00:00:00Z",
+  "authored_by": "kit-agent",
+  "attested_at": "2026-06-06T00:00:00Z"
 }

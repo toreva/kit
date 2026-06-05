@@ -1,0 +1,77 @@
+{
+  "schema_version": "kit.rollback_path.v1",
+  "description": "Canonical rollback_path field definition for action packets. Describes how a user cancels or recovers without Toreva involvement.",
+
+  "schema": {
+    "rollback_path": {
+      "type": "object",
+      "required": ["method", "description", "non_custodial_note", "recovery_evidence_ref", "attested_by"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["user_initiated_withdrawal", "app_cancel", "timeout_expiry"],
+          "description": "Mechanism by which the action can be undone or funds recovered."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable summary of how the user cancels or recovers. Must be true without Toreva online."
+        },
+        "non_custodial_note": {
+          "type": "string",
+          "const": "Toreva does not hold private keys. User retains signing authority.",
+          "description": "Non-custodial invariant confirmation. Value is fixed."
+        },
+        "recovery_evidence_ref": {
+          "type": "string",
+          "description": "File path (relative to repo root) or URL to the kit recovery script or equivalent attestable artefact."
+        },
+        "attested_by": {
+          "type": "string",
+          "description": "Agent that verified non-custodial recoverability by reviewing the recovery_evidence_ref. Leave 'pending' until review complete.",
+          "examples": ["kit-agent", "risk-agent", "pending"]
+        }
+      }
+    }
+  },
+
+  "invariants": [
+    "rollback_path.method must be exercisable without Toreva being online or in the loop.",
+    "rollback_path.non_custodial_note value is fixed and must not be altered.",
+    "attested_by must not be a live agent name until recovery_evidence_ref contains no TODO placeholders.",
+    "For any action_packet labelled ready-to-execute, attested_by must be a named agent (not 'pending')."
+  ],
+
+  "method_guidance": {
+    "user_initiated_withdrawal": "User calls venue protocol directly (e.g. Pacifica close-position + withdraw). Suitable for perps positions. Requires working recovery script with no TODOs.",
+    "app_cancel": "User taps 'Cancel' in Toreva app before execution is dispatched on-chain. Toreva must not have yet submitted the transaction. Suitable for pre-signed but unbroadcast actions.",
+    "timeout_expiry": "Action packet has an on-chain expiry; if user takes no action the packet lapses. Suitable for limit/conditional orders."
+  },
+
+  "populated_example": {
+    "_context": "DeFi rebalance recommendation — research/backtested variant (no live fund movement yet)",
+    "rollback_path": {
+      "method": "user_initiated_withdrawal",
+      "description": "User can close all Pacifica perp positions and withdraw margin directly via Pacifica's native API using only their wallet keypair. No Toreva endpoint is required. Steps: (1) run kit/examples/recovery/recovery.ts with walletKeypair + any public Solana RPC; (2) script closes open positions on-chain; (3) script withdraws margin balances to wallet. Toreva need not be online at any step.",
+      "non_custodial_note": "Toreva does not hold private keys. User retains signing authority.",
+      "recovery_evidence_ref": "kit/examples/recovery/recovery.ts",
+      "attested_by": "pending"
+    },
+    "_attestation_blocker": "recovery.ts contains TODO placeholders for PACIFICA_PROGRAM_ID, authenticateWithPacifica, buildPacificaCloseInstruction, and buildPacificaWithdrawInstruction. kit-agent must replace these with authoritative Pacifica values before attested_by can be set to a live agent name. See kit/examples/recovery/recovery.ts inline TODOs."
+  },
+
+  "attestation_gate": {
+    "preconditions_for_attestation": [
+      "PACIFICA_PROGRAM_ID replaced with verifiable mainnet program ID (checkable on Solana explorer).",
+      "authenticateWithPacifica implements Pacifica's documented auth-challenge flow (GET /auth/challenge → sign nonce → POST /auth/verify or equivalent).",
+      "buildPacificaCloseInstruction builds from Pacifica's published IDL or SDK — no placeholder throws.",
+      "buildPacificaWithdrawInstruction same as above.",
+      "Script compiles with pnpm typecheck.",
+      "At least one integration test or a manual dry-run trace showing the auth + position-query path succeeds without Toreva endpoints."
+    ],
+    "attestation_class": "not-class-a",
+    "attestation_class_rationale": "Pacifica program IDs are public on-chain data. Implementing against a public DEX protocol's documented API does not cross custody, revenue, legal, or product-model gates. Research step only — requires consulting Pacifica's public docs or on-chain registry."
+  },
+
+  "updated_at": "2026-06-05T00:00:00Z",
+  "authored_by": "kit-agent"
+}

@@ -178,3 +178,32 @@ Today's filesystem transport is build-mode only. When Toreva crosses $10k MRR, w
 See: `coordinator/docs/bus-ops-phase-1b/` for the full cloud design, and the memory `project_local_daemon_pivot.md` for the 2026-04-21 decision.
 
 ## END CANONICAL BLOCK
+
+## BEGIN PLANETARY-SCALE INVARIANT — do not edit in-repo
+
+# PLANETARY-SCALE MULTI-SUBJECT INVARIANT — read before designing ANY solution
+
+**This block is a top-priority rule. It applies to every solution any agent designs, builds, reviews, or ships — backend, frontend, infra, data, or doctrine.**
+
+Every solution must serve **any subject at planetary scale** — any user, any agent, any wallet, the 1,000,000th and a fresh-random one — **identically and with cost sublinear in the number of subjects**. Never just the founder's wallet, never a hand-picked cohort. A solution that only works for the founder, for a capped/allowlisted set, or whose cost grows with the user count, is **not done** — it is a defect, even if it "works" in a demo.
+
+## The 5-question gate (a solution is NOT shippable unless every answer is "yes")
+1. **Nth-subject:** Does it serve an arbitrary new subject with **zero** special-casing? (No hardcoded founder address, no `if (user === founder)`, no per-subject branch.)
+2. **Sublinear cost:** Does compute / RPC / DB / $ stay ~flat as subjects grow 44 → 1e6? (**No** `listActive`/`listAll`/`SELECT * … <subjects>` inside a timer; **no** `Promise.all` / `for` over an unbounded subject list on a cycle.)
+3. **No gate:** Is there **zero** allowlist / cap / `*_CAP` / `*_ALLOWLIST` / `*_WHITELIST` / `*_OVERRIDES_JSON` / `*_FOUNDER_*`? (These are **deleted**, not exempted, not "temporary build-mode stopgaps".)
+4. **Push not pull:** Is each per-subject read triggered by an **event** — chain webhook, user attention (session/SSE), agent action (bus envelope), or explicit `/refresh` — with polling **OFF by default** and only a degraded reconciliation fallback?
+5. **Cohort + receipt:** Do you read the subject set via **`cohort.query(name)`** (bounded, indexed, event-fed — not a full scan), and does every user-visible number carry a `receipt_id` linking to its bus envelope (receipt-or-it-didn't-happen)?
+
+## What good vs bad looks like
+- **BAD:** `setInterval(() => { for (const u of await listActive()) read(u) })` · `MONEY_TRUTH_CANONICAL_WALLET_CAP` · `const FOUNDER = "AQHCs…"` · `STAGE_1_FOUNDER_CAP_USD` · a number on screen with no receipt.
+- **GOOD:** Helius/chain webhook → update exactly the one changed subject → bus → SSE · `cohort.query("attention_received")` · per-user on-demand read, edge-cached · shared reserve/price read once per TTL, not per subject · empty result still emits `count=0` envelope.
+
+## If a solution can't pass the gate
+It is not "ship now, scale later." Redesign it to be planetary-correct, or — if that is genuinely a one-way door or >Class-A cost — escalate via EA (per the KERNEL-LOOP rule). "It works for the founder" is **not** acceptance.
+
+## Enforcement (awareness → detection → penalty), same regime as BUS-FIRST
+1. **Awareness** — this block (every agent reads it at session start) + `kernel/docs/doctrine/planetary-substrate-invariants.md`.
+2. **Detection** — the `planetary-substrate` CI lint (`iac/lints/planetary-substrate/`, PLANETARY-001..010) blocks PRs that reintroduce a banned pattern, citing the doctrine line. The **random-cohort probe** (`po/scripts/planetary-substrate-probe.ts`) is the runtime fitness function — a **fresh-random-wallet failure is a P0** (correctness is proven on random + freshly-minted subjects, never a founder/TY allowlist).
+3. **Penalty** — a detected bypass downgrades the offending agent's `capability_tier`, blocks PR merges via the planetary gate, and is logged as a durable incident. Repeat bypass escalates to sentinel.
+
+## END PLANETARY-SCALE INVARIANT

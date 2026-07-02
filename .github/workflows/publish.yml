@@ -28,6 +28,32 @@ jobs:
         with:
           secrets: |-
             npm_token:toreva-prod/npm-token-toreva-kit
+
+      # ── Litmus gate (founder mandate 2026-05-10) ─────────────────────────────
+      # Sparse-checkout gateway/tools so we can run litmus-trading-bot.mjs
+      # against the live MCP surface before any package is published.
+      # Infra note: requires a GitHub secret GATEWAY_READ_TOKEN (PAT or App
+      # token with contents:read on toreva/gateway) — open an iam dispatch if
+      # that secret is not yet provisioned in this repo's Actions secrets.
+      - name: Checkout gateway tools (sparse)
+        uses: actions/checkout@v4
+        with:
+          repository: toreva/gateway
+          token: ${{ secrets.GATEWAY_READ_TOKEN }}
+          sparse-checkout: tools
+          path: gateway-litmus
+
+      - name: Install litmus dependencies
+        working-directory: gateway-litmus
+        run: npm install --no-save "@noble/ed25519@^2.3.0" "@noble/hashes@^1.4.0" "bs58@^6.0.0"
+
+      - name: Run litmus gate — blocks publish on failure
+        working-directory: gateway-litmus
+        run: node tools/litmus-trading-bot.mjs --prod-only
+        env:
+          MCP_API_KEY: tk_litmus_r1_synthetic_3rd_party_trading_bot_demo_only
+      # ── End litmus gate ───────────────────────────────────────────────────────
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm -r publish --access public --no-git-checks

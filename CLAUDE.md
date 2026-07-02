@@ -171,6 +171,36 @@ Full Layer-2 spec: [`memory/playbooks/layer-2-memory-file.md`](../memory/playboo
 <!-- /TOREVA-MEMORY-PROTOCOL -->
 
 
+
+## BEGIN PLANETARY-SCALE INVARIANT — do not edit in-repo
+
+# PLANETARY-SCALE MULTI-SUBJECT INVARIANT — read before designing ANY solution
+
+**This block is a top-priority rule. It applies to every solution any agent designs, builds, reviews, or ships — backend, frontend, infra, data, or doctrine.**
+
+Every solution must serve **any subject at planetary scale** — any user, any agent, any wallet, the 1,000,000th and a fresh-random one — **identically and with cost sublinear in the number of subjects**. Never just the founder's wallet, never a hand-picked cohort. A solution that only works for the founder, for a capped/allowlisted set, or whose cost grows with the user count, is **not done** — it is a defect, even if it "works" in a demo.
+
+## The 5-question gate (a solution is NOT shippable unless every answer is "yes")
+1. **Nth-subject:** Does it serve an arbitrary new subject with **zero** special-casing? (No hardcoded founder address, no `if (user === founder)`, no per-subject branch.)
+2. **Sublinear cost:** Does compute / RPC / DB / $ stay ~flat as subjects grow 44 → 1e6? (**No** `listActive`/`listAll`/`SELECT * … <subjects>` inside a timer; **no** `Promise.all` / `for` over an unbounded subject list on a cycle.)
+3. **No gate:** Is there **zero** allowlist / cap / `*_CAP` / `*_ALLOWLIST` / `*_WHITELIST` / `*_OVERRIDES_JSON` / `*_FOUNDER_*`? (These are **deleted**, not exempted, not "temporary build-mode stopgaps".)
+4. **Push not pull:** Is each per-subject read triggered by an **event** — chain webhook, user attention (session/SSE), agent action (bus envelope), or explicit `/refresh` — with polling **OFF by default** and only a degraded reconciliation fallback?
+5. **Cohort + receipt:** Do you read the subject set via **`cohort.query(name)`** (bounded, indexed, event-fed — not a full scan), and does every user-visible number carry a `receipt_id` linking to its bus envelope (receipt-or-it-didn't-happen)?
+
+## What good vs bad looks like
+- **BAD:** `setInterval(() => { for (const u of await listActive()) read(u) })` · `MONEY_TRUTH_CANONICAL_WALLET_CAP` · `const FOUNDER = "AQHCs…"` · `STAGE_1_FOUNDER_CAP_USD` · a number on screen with no receipt.
+- **GOOD:** Helius/chain webhook → update exactly the one changed subject → bus → SSE · `cohort.query("attention_received")` · per-user on-demand read, edge-cached · shared reserve/price read once per TTL, not per subject · empty result still emits `count=0` envelope.
+
+## If a solution can't pass the gate
+It is not "ship now, scale later." Redesign it to be planetary-correct, or — if that is genuinely a one-way door or >Class-A cost — escalate via EA (per the KERNEL-LOOP rule). "It works for the founder" is **not** acceptance.
+
+## Enforcement (awareness → detection → penalty), same regime as BUS-FIRST
+1. **Awareness** — this block (every agent reads it at session start) + `kernel/docs/doctrine/planetary-substrate-invariants.md`.
+2. **Detection** — the `planetary-substrate` CI lint (`iac/lints/planetary-substrate/`, PLANETARY-001..010) blocks PRs that reintroduce a banned pattern, citing the doctrine line. The **random-cohort probe** (`po/scripts/planetary-substrate-probe.ts`) is the runtime fitness function — a **fresh-random-wallet failure is a P0** (correctness is proven on random + freshly-minted subjects, never a founder/TY allowlist).
+3. **Penalty** — a detected bypass downgrades the offending agent's `capability_tier`, blocks PR merges via the planetary gate, and is logged as a durable incident. Repeat bypass escalates to sentinel.
+
+## END PLANETARY-SCALE INVARIANT
+
 ## BEGIN CANONICAL BLOCK — do not edit in-repo
 
 ## Dispatch OODA loop — daemon-managed (build mode)
@@ -198,6 +228,18 @@ If you're acting as the runner inside a long-running dispatch and you realize th
 - **Local Codex is a repo-local runner.** `AGENT_RUNNER=codex` runs `codex exec --cd <repo>` with `AGENT_CODEX_SANDBOX` defaulting to `workspace-write`, then writes Codex's final message into `intake/responses/<basename>`. Optional `AGENT_CODEX_MODEL` and `AGENT_CODEX_PROFILE` pass through to `codex exec`. It uses the local Codex CLI auth/config, not the GitHub issue connector.
 - **Manual/noop mode is explicit deferral.** `AGENT_RUNNER=manual` or `AGENT_RUNNER=noop` writes a clear `Status: deferred` response instead of invoking a model. Use this when Claude quota is exhausted or no local model runner is available.
 - **Codex Cloud is separate.** `scripts/codex-dispatch.sh` opens a GitHub issue with an `@codex` mention so the GitHub Codex Connector can work in Codex Cloud. It is not the repo-local daemon path, is separate from `AGENT_RUNNER=codex`, and does not consume `intake/pending-dispatches/`.
+- **Artifact lifecycle is separated from memory.** Raw dispatch files, response files, ack/status files, and runner transcripts are transport exhaust. The daemon archives raw copies under `$AGENT_DAEMON_ARCHIVE_ROOT` (default `~/.toreva/agent-daemon/archive`) and these paths are git-ignored. Distilled lessons and decisions belong in repo-local `MEMORY.md`; cross-repo candidates are promoted by the memory agent for kernel consumption.
+
+### Document safety
+
+Before writing, replacing, formatting, flattening, exporting, or regenerating any user-facing document or active working file, apply this fleet-wide safety rule:
+
+- **Treat user-open files as read-only.** If the user has a file open in an IDE, Preview, Acrobat, Office, a Google Drive sync folder, or has just said they are working in it, do not overwrite that path.
+- **Ask before replacement.** Do not regenerate, copy over, format, flatten, or export over an existing user-facing document unless the user has expressly requested that exact overwrite.
+- **Default to versioned output.** Write a new file such as `_v2`, `_patched`, `_review-copy`, or a timestamped filename instead of replacing the existing file.
+- **Preserve before approved overwrite.** If the user explicitly approves replacement, first copy the current file to a recovery/backup path with a timestamp, then write the replacement.
+- **Handle binary and office-style files conservatively.** PDFs, forms, spreadsheets, word-processing documents, and synced documents may contain manual edits that are not recoverable from git; once manual editing has started, programmatic regeneration is not safe by default.
+- **On overwrite incidents, stop writes.** Preserve the current disk state, look for backups/autosaves/history before touching the file again, and communicate plainly about what happened and what recovery options exist.
 
 ### Your OODA loop when invoked from a dispatch
 
@@ -253,7 +295,7 @@ If you touched tracked files in this repo as part of the dispatch:
    - Plus the standard `Co-Authored-By:` if applicable.
 4. **Push** the branch to `origin`.
 5. **Open a PR** via `gh pr create` with a body referencing the dispatch path.
-6. **Enable auto-merge** via `gh pr merge --squash --auto` so CI can land the change without further human action.
+6. **Enable auto-merge** via `gh pr merge --squash --auto` so CI can land the change without further human action. If `--auto` fails with `enablePullRequestAutoMerge` / "Protected branch rules not configured for this branch", the target branch has no branch-protection rules, so GitHub cannot arm auto-merge regardless of the repo-level `allow_auto_merge` setting. Fall back as follows: if the PR has checks (`gh pr checks <pr>` lists any), wait for them with `gh pr checks <pr> --watch` and then merge directly via `gh pr merge --squash`; if no checks are configured, merge directly via `gh pr merge --squash` immediately. Do NOT add branch-protection rules inline to make `--auto` work — that is a deliberate per-repo governance change (a required status check on a repo with no CI deadlocks every future PR), so dispatch coordinator instead if you think a repo needs protection rules.
 7. **Verify CI is green** (or at least running with no immediate failures) before declaring completed.
 8. In the response's `## Evidence` section, include: branch name, PR URL, commit SHA, and CI status link.
 

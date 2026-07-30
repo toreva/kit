@@ -1,66 +1,109 @@
 import { describe, it, expect } from 'vitest';
 import { intentToolSchemas, INTENT_RELAY_TYPES } from '../intents.js';
 
+const humanWallet = '11111111111111111111111111111111';
+const agentWallet = '22222222222222222222222222222222';
+
+const policyBounds = {
+  daily_notional_lamports: 1_000_000,
+  operations_per_day: 3,
+  cooldown_seconds: 60,
+  risk_tier_ceiling: 'low',
+  allowed_operations: ['read', 'scan', 'simulate', 'execute_own_address'],
+  valid_until: null
+};
+
 describe('intentToolSchemas', () => {
-  describe('toreva_establish', () => {
-    it('uses Gateway MCP walletAddress naming', () => {
-      const result = intentToolSchemas.toreva_establish.safeParse({
-        walletAddress: '11111111111111111111111111111111',
-      });
-      expect(result.success).toBe(true);
+  it('requires non-null policy caps when establishing an agent wallet', () => {
+    const result = intentToolSchemas.toreva_establish_agent_wallet.safeParse({
+      human_wallet_address: humanWallet,
+      policy_bounds: policyBounds
     });
 
-    it('rejects the old wallet alias on establish', () => {
-      const result = intentToolSchemas.toreva_establish.safeParse({
-        wallet: '11111111111111111111111111111111',
-      });
-      expect(result.success).toBe(false);
-    });
+    expect(result.success).toBe(true);
   });
 
-  describe('toreva_scan', () => {
-    it('parses valid input', () => {
-      const result = intentToolSchemas.toreva_scan.safeParse({
-        wallet: 'abc',
-        prompt: 'scan my wallet',
-      });
-      expect(result.success).toBe(true);
+  it('rejects omitted caps on establish', () => {
+    const result = intentToolSchemas.toreva_establish_agent_wallet.safeParse({
+      human_wallet_address: humanWallet
     });
 
-    it('rejects missing wallet', () => {
-      const result = intentToolSchemas.toreva_scan.safeParse({
-        prompt: 'scan my wallet',
-      });
-      expect(result.success).toBe(false);
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects null cap sentinels while allowing nullable valid_until', () => {
+    const result = intentToolSchemas.toreva_establish_agent_wallet.safeParse({
+      human_wallet_address: humanWallet,
+      policy_bounds: {
+        ...policyBounds,
+        daily_notional_lamports: null
+      }
     });
 
-    it('rejects empty prompt', () => {
-      const result = intentToolSchemas.toreva_scan.safeParse({
-        wallet: 'abc',
-        prompt: '',
-      });
-      expect(result.success).toBe(false);
+    expect(result.success).toBe(false);
+  });
+
+  it('separates human wallet and agent wallet targets by wallet_role', () => {
+    const humanResult = intentToolSchemas.toreva_read_or_scan.safeParse({
+      target_wallet: {
+        wallet_role: 'human_wallet',
+        human_wallet_address: humanWallet
+      },
+      prompt: 'scan'
     });
+    const agentResult = intentToolSchemas.toreva_read_or_scan.safeParse({
+      target_wallet: {
+        wallet_role: 'agent_wallet',
+        agent_wallet_address: agentWallet
+      },
+      prompt: 'scan'
+    });
+
+    expect(humanResult.success).toBe(true);
+    expect(agentResult.success).toBe(true);
+  });
+
+  it('rejects an agent address under a human wallet role', () => {
+    const result = intentToolSchemas.toreva_read_or_scan.safeParse({
+      target_wallet: {
+        wallet_role: 'human_wallet',
+        agent_wallet_address: agentWallet
+      },
+      prompt: 'scan'
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('execute-within-policy only accepts the agent wallet target', () => {
+    const result = intentToolSchemas.toreva_execute_within_policy.safeParse({
+      target_wallet: {
+        wallet_role: 'human_wallet',
+        human_wallet_address: humanWallet
+      },
+      policy_bounds: policyBounds,
+      requested_action: {
+        user_instruction: 'send to my own wallet',
+        operation: 'execute_own_address',
+        simulation_receipt_id: 'receipt-123',
+        own_address_destination: {
+          wallet_role: 'human_wallet',
+          human_wallet_address: humanWallet,
+          address_is_user_attested_own_address: true
+        }
+      }
+    });
+
+    expect(result.success).toBe(false);
   });
 });
 
 describe('INTENT_RELAY_TYPES', () => {
-  it('maps toreva_establish to intent.establish', () => {
-    expect(INTENT_RELAY_TYPES.toreva_establish).toBe('intent.establish');
-  });
-
-  it('maps toreva_scan to intent.scan', () => {
-    expect(INTENT_RELAY_TYPES.toreva_scan).toBe('intent.scan');
-  });
-
-  it('maps toreva_execute to intent.execute', () => {
-    expect(INTENT_RELAY_TYPES.toreva_execute).toBe('intent.execute');
-  });
-
-  it('all 6 intent tools have corresponding relay types', () => {
+  it('maps all policy-envelope tools to relay types', () => {
     const schemaKeys = Object.keys(intentToolSchemas).sort();
     const relayKeys = Object.keys(INTENT_RELAY_TYPES).sort();
+
     expect(schemaKeys).toEqual(relayKeys);
-    expect(schemaKeys).toHaveLength(6);
+    expect(schemaKeys).toHaveLength(7);
   });
 });

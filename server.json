@@ -16,11 +16,5 @@
         "type": "stdio"
       }
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://gateway.toreva.com/mcp"
-    }
   ]
 }

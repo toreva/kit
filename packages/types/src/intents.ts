@@ -1,64 +1,116 @@
 import { z } from 'zod';
 
-const baseIntentInputSchema = z.object({
-  wallet: z.string(),
-  prompt: z.string().min(1)
-});
-
 const walletAddressSchema = z.string().min(32).max(88);
-const signerKindSchema = z.enum([
-  'delegated_authority',
-  'human_wallet',
-  'venue_api_agent',
-  'mpc',
-  'multisig',
-  'smart_account',
-  'exchange_api_agent',
-  'simulated'
+const receiptIdSchema = z.string().min(8).max(160);
+const promptSchema = z.string().min(1).max(2000);
+
+const operationSchema = z.enum([
+  'read',
+  'scan',
+  'simulate',
+  'execute_own_address',
+  'explain',
+  'receipt',
+  'refuse'
 ]);
 
-const establishCapabilitySchema = z.object({
-  capability_type: z.string().min(1),
-  delegation_provider: z.string().min(1).optional(),
-  network: z.string().min(1).optional(),
-  venue: z.string().min(1).optional(),
-  execution_adapter: z.string().min(1).optional(),
-  signer_kind: signerKindSchema.optional(),
-  guardrails: z.record(z.unknown()).optional(),
-  provider_metadata: z.record(z.unknown()).optional()
-});
+const riskTierSchema = z.enum(['read_only', 'low', 'standard']);
+
+export const humanWalletTargetSchema = z.object({
+  wallet_role: z.literal('human_wallet'),
+  human_wallet_address: walletAddressSchema
+}).strict();
+
+export const agentWalletTargetSchema = z.object({
+  wallet_role: z.literal('agent_wallet'),
+  agent_wallet_address: walletAddressSchema
+}).strict();
+
+export const walletTargetSchema = z.discriminatedUnion('wallet_role', [
+  humanWalletTargetSchema,
+  agentWalletTargetSchema
+]);
+
+export const policyBoundsSchema = z.object({
+  daily_notional_lamports: z.number().int().positive(),
+  operations_per_day: z.number().int().positive(),
+  cooldown_seconds: z.number().int().positive(),
+  risk_tier_ceiling: riskTierSchema,
+  allowed_operations: z.array(operationSchema).min(1),
+  valid_until: z.string().datetime().nullable()
+}).strict();
+
+const ownAddressDestinationSchema = z.object({
+  wallet_role: z.literal('human_wallet'),
+  human_wallet_address: walletAddressSchema,
+  address_is_user_attested_own_address: z.literal(true)
+}).strict();
+
+const requestedActionSchema = z.object({
+  user_instruction: promptSchema,
+  operation: operationSchema,
+  token_mint: z.string().min(32).max(88).optional(),
+  amount_lamports: z.number().int().positive().optional(),
+  own_address_destination: ownAddressDestinationSchema.optional()
+}).strict();
 
 export const intentToolSchemas = {
-  toreva_establish: z.object({
-    walletAddress: walletAddressSchema,
-    prompt: z.string().min(1).optional(),
-    agent_authority: z.object({
-      delegation_provider: z.string().min(1).default('swig'),
-      network: z.string().min(1).default('solana'),
-      signer_kind: signerKindSchema.optional(),
-      policy_id: z.string().optional(),
-      policy_hash: z.string().optional(),
-      provider_metadata: z.record(z.unknown()).optional()
-    }).optional(),
-    capabilities: z.array(establishCapabilitySchema).optional()
-  }),
-  toreva_scan: baseIntentInputSchema,
-  toreva_simulate: baseIntentInputSchema,
-  toreva_execute: baseIntentInputSchema,
-  toreva_explain: baseIntentInputSchema,
-  toreva_configure: baseIntentInputSchema.extend({
-    settings: z.record(z.unknown()).optional()
-  })
+  toreva_establish_agent_wallet: z.object({
+    human_wallet_address: walletAddressSchema,
+    policy_bounds: policyBoundsSchema,
+    prompt: promptSchema.optional()
+  }).strict(),
+  toreva_read_or_scan: z.object({
+    target_wallet: walletTargetSchema,
+    prompt: promptSchema
+  }).strict(),
+  toreva_simulate_action: z.object({
+    target_wallet: agentWalletTargetSchema,
+    policy_bounds: policyBoundsSchema,
+    requested_action: requestedActionSchema
+  }).strict(),
+  toreva_execute_within_policy: z.object({
+    target_wallet: agentWalletTargetSchema,
+    policy_bounds: policyBoundsSchema,
+    requested_action: requestedActionSchema.extend({
+      operation: z.literal('execute_own_address'),
+      simulation_receipt_id: receiptIdSchema
+    })
+  }).strict(),
+  toreva_explain_action: z.object({
+    receipt_id: receiptIdSchema.optional(),
+    target_wallet: walletTargetSchema.optional(),
+    prompt: promptSchema
+  }).strict(),
+  toreva_get_receipt: z.object({
+    receipt_id: receiptIdSchema
+  }).strict(),
+  toreva_refuse_action: z.object({
+    target_wallet: walletTargetSchema.optional(),
+    reason_code: z.enum([
+      'outside_policy',
+      'unknown_wallet_role',
+      'missing_cap',
+      'blind_signing',
+      'unsupported_operation',
+      'legal_block'
+    ]),
+    user_instruction: promptSchema,
+    receipt_id: receiptIdSchema.optional()
+  }).strict()
 } as const;
 
 export const INTENT_RELAY_TYPES = {
-  toreva_establish: 'intent.establish',
-  toreva_scan: 'intent.scan',
-  toreva_simulate: 'intent.simulate',
-  toreva_execute: 'intent.execute',
-  toreva_explain: 'intent.explain',
-  toreva_configure: 'intent.configure'
+  toreva_establish_agent_wallet: 'policy.establish_agent_wallet',
+  toreva_read_or_scan: 'policy.read_or_scan',
+  toreva_simulate_action: 'policy.simulate_action',
+  toreva_execute_within_policy: 'policy.execute_within_policy',
+  toreva_explain_action: 'policy.explain_action',
+  toreva_get_receipt: 'policy.get_receipt',
+  toreva_refuse_action: 'policy.refuse_action'
 } as const;
 
+export type WalletTarget = z.infer<typeof walletTargetSchema>;
+export type PolicyBounds = z.infer<typeof policyBoundsSchema>;
 export type IntentToolName = keyof typeof intentToolSchemas;
 export type IntentRelayType = (typeof INTENT_RELAY_TYPES)[IntentToolName];

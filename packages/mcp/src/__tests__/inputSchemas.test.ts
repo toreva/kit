@@ -20,52 +20,67 @@ function findTool(tools: Tool[], name: string): Tool {
   return tool;
 }
 
-describe('inputSchemas — typed per tool', () => {
-  it('toreva_establish requires walletAddress and accepts child capabilities', async () => {
+describe('inputSchemas — policy-envelope MCP tools', () => {
+  it('lists only the public policy-envelope tool set', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_establish').inputSchema as any;
-    expect(schema.required).toEqual(['walletAddress']);
-    expect(schema.properties).toHaveProperty('capabilities');
-    expect(schema.properties).toHaveProperty('agent_authority');
+
+    expect(tools.map((tool) => tool.name).sort()).toEqual([
+      'toreva_establish_agent_wallet',
+      'toreva_execute_within_policy',
+      'toreva_explain_action',
+      'toreva_get_receipt',
+      'toreva_read_or_scan',
+      'toreva_refuse_action',
+      'toreva_simulate_action'
+    ].sort());
   });
 
-  it('toreva_scan inputSchema has required=[wallet, prompt]', async () => {
+  it('does not publish perps, earn, staking, or strategy catalog tools', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_scan').inputSchema;
-    expect(schema.required).toEqual(expect.arrayContaining(['wallet', 'prompt']));
-    expect(schema.required).toHaveLength(2);
+    const names = tools.map((tool) => tool.name);
+
+    expect(names.some((name) => name.includes('perps'))).toBe(false);
+    expect(names.some((name) => name.includes('earn'))).toBe(false);
+    expect(names.some((name) => name.includes('stake'))).toBe(false);
+    expect(names).not.toContain('toreva_strategies');
   });
 
-  it('toreva_perps_long inputSchema matches Gateway open input contract', async () => {
+  it('establish agent wallet requires human wallet and policy bounds', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_perps_long').inputSchema;
-    expect(schema.required).toEqual(
-      expect.arrayContaining([
-        'walletAddress',
-        'token',
-        'sizeUsd',
-        'leverage',
-        'collateralToken',
-        'collateralAmount'
-      ])
-    );
+    const schema = findTool(tools, 'toreva_establish_agent_wallet').inputSchema as any;
+
+    expect(schema.required).toEqual(expect.arrayContaining(['human_wallet_address', 'policy_bounds']));
+    expect(schema.properties.policy_bounds.required).toEqual(expect.arrayContaining([
+      'daily_notional_lamports',
+      'operations_per_day',
+      'cooldown_seconds',
+      'risk_tier_ceiling',
+      'allowed_operations',
+      'valid_until'
+    ]));
   });
 
-  it('toreva_perps_long inputSchema has venue as optional', async () => {
+  it('read or scan requires a discriminated wallet target', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_perps_long').inputSchema as any;
-    expect(schema.required).not.toContain('venue');
-    expect(schema.properties).toHaveProperty('venue');
+    const schema = findTool(tools, 'toreva_read_or_scan').inputSchema as any;
+
+    expect(schema.required).toEqual(expect.arrayContaining(['target_wallet', 'prompt']));
+    expect(schema.properties.target_wallet).toHaveProperty('anyOf');
   });
 
-  it('toreva_perps_query_venues has no required properties', async () => {
+  it('execute-within-policy requires an agent wallet target and simulation receipt', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_perps_query_venues').inputSchema;
-    const required = schema.required ?? [];
-    expect(required).toHaveLength(0);
+    const schema = findTool(tools, 'toreva_execute_within_policy').inputSchema as any;
+
+    expect(schema.required).toEqual(expect.arrayContaining([
+      'target_wallet',
+      'policy_bounds',
+      'requested_action'
+    ]));
+    expect(schema.properties.requested_action.required).toContain('simulation_receipt_id');
   });
 
-  it('no tool has additionalProperties: true (generic schema is gone)', async () => {
+  it('no tool has additionalProperties: true', async () => {
     const tools = await listTools();
     for (const tool of tools) {
       expect(tool.inputSchema).not.toHaveProperty('additionalProperties', true);
@@ -77,12 +92,5 @@ describe('inputSchemas — typed per tool', () => {
     for (const tool of tools) {
       expect(tool.inputSchema.type).toBe('object');
     }
-  });
-
-  it('toreva_configure inputSchema includes optional settings property', async () => {
-    const tools = await listTools();
-    const schema = findTool(tools, 'toreva_configure').inputSchema as any;
-    expect(schema.properties).toHaveProperty('settings');
-    expect(schema.required).not.toContain('settings');
   });
 });

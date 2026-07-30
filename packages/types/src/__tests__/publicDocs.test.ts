@@ -23,6 +23,7 @@ describe('public MCP metadata', () => {
 
   it('does not advertise excluded venues or product families in MCP metadata', () => {
     const publicText = [
+      readRootFile('README.md'),
       readRootFile('server.json'),
       readRootFile('packages/mcp/package.json'),
       readRootFile('packages/types/package.json')
@@ -35,6 +36,7 @@ describe('public MCP metadata', () => {
 
   it('public metadata does not include raw signer or secret material keys', () => {
     const publicText = [
+      readRootFile('README.md'),
       readRootFile('server.json'),
       readRootFile('packages/mcp/package.json'),
       readRootFile('packages/types/package.json')

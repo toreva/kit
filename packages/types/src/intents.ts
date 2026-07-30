@@ -8,7 +8,7 @@ const operationSchema = z.enum([
   'read',
   'scan',
   'simulate',
-  'execute_own_address',
+  'prepare_unsigned_transaction',
   'explain',
   'receipt',
   'refuse'
@@ -69,11 +69,11 @@ export const intentToolSchemas = {
     policy_bounds: policyBoundsSchema,
     requested_action: requestedActionSchema
   }).strict(),
-  toreva_execute_within_policy: z.object({
+  toreva_prepare_unsigned_transaction: z.object({
     target_wallet: agentWalletTargetSchema,
     policy_bounds: policyBoundsSchema,
     requested_action: requestedActionSchema.extend({
-      operation: z.literal('execute_own_address'),
+      operation: z.literal('prepare_unsigned_transaction'),
       simulation_receipt_id: receiptIdSchema
     })
   }).strict(),
@@ -104,7 +104,7 @@ export const INTENT_RELAY_TYPES = {
   toreva_establish_agent_wallet: 'policy.establish_agent_wallet',
   toreva_read_or_scan: 'policy.read_or_scan',
   toreva_simulate_action: 'policy.simulate_action',
-  toreva_execute_within_policy: 'policy.execute_within_policy',
+  toreva_prepare_unsigned_transaction: 'policy.prepare_unsigned_transaction',
   toreva_explain_action: 'policy.explain_action',
   toreva_get_receipt: 'policy.get_receipt',
   toreva_refuse_action: 'policy.refuse_action'

@@ -22,7 +22,7 @@ const toolDescriptions: Array<{ name: string; description: string }> = [
   { name: 'toreva_establish_agent_wallet', description: 'Create the agent wallet.\nThe user sets hard limits first.\nToreva does not hold the key.\nReturns a receipt.' },
   { name: 'toreva_read_or_scan', description: 'Read or scan one wallet.\nSay human wallet or agent wallet.\nNo money moves.\nReturns a receipt.' },
   { name: 'toreva_simulate_action', description: 'Test the action first.\nOnly use the agent wallet.\nShow what would happen.\nReturns a receipt.' },
-  { name: 'toreva_execute_within_policy', description: 'Do the checked action.\nOnly use the agent wallet.\nOnly if the policy allows it.\nReturns a receipt.' },
+  { name: 'toreva_prepare_unsigned_transaction', description: 'Prepare an unsigned transaction.\nOnly after simulation.\nThe user signs elsewhere.\nNo money moves.\nReturns a receipt.' },
   { name: 'toreva_explain_action', description: 'Explain an action or receipt.\nUse short words.\nSay what happened.\nSay why it passed or failed.' },
   { name: 'toreva_get_receipt', description: 'Get one receipt.\nUse the receipt id.\nShow the final outcome.\nShow the limits used.' },
   { name: 'toreva_refuse_action', description: 'Refuse an unsafe action.\nSay the reason.\nDo not move money.\nReturns a refusal receipt.' },

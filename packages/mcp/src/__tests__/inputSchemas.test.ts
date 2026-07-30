@@ -26,9 +26,9 @@ describe('inputSchemas — policy-envelope MCP tools', () => {
 
     expect(tools.map((tool) => tool.name).sort()).toEqual([
       'toreva_establish_agent_wallet',
-      'toreva_execute_within_policy',
       'toreva_explain_action',
       'toreva_get_receipt',
+      'toreva_prepare_unsigned_transaction',
       'toreva_read_or_scan',
       'toreva_refuse_action',
       'toreva_simulate_action'
@@ -68,9 +68,9 @@ describe('inputSchemas — policy-envelope MCP tools', () => {
     expect(schema.properties.target_wallet).toHaveProperty('anyOf');
   });
 
-  it('execute-within-policy requires an agent wallet target and simulation receipt', async () => {
+  it('prepare-unsigned-transaction requires an agent wallet target and simulation receipt', async () => {
     const tools = await listTools();
-    const schema = findTool(tools, 'toreva_execute_within_policy').inputSchema as any;
+    const schema = findTool(tools, 'toreva_prepare_unsigned_transaction').inputSchema as any;
 
     expect(schema.required).toEqual(expect.arrayContaining([
       'target_wallet',

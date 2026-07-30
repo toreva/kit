@@ -9,7 +9,7 @@ const policyBounds = {
   operations_per_day: 3,
   cooldown_seconds: 60,
   risk_tier_ceiling: 'low',
-  allowed_operations: ['read', 'scan', 'simulate', 'execute_own_address'],
+  allowed_operations: ['read', 'scan', 'simulate', 'prepare_unsigned_transaction'],
   valid_until: null
 };
 
@@ -75,8 +75,8 @@ describe('intentToolSchemas', () => {
     expect(result.success).toBe(false);
   });
 
-  it('execute-within-policy only accepts the agent wallet target', () => {
-    const result = intentToolSchemas.toreva_execute_within_policy.safeParse({
+  it('prepare-unsigned-transaction only accepts the agent wallet target', () => {
+    const result = intentToolSchemas.toreva_prepare_unsigned_transaction.safeParse({
       target_wallet: {
         wallet_role: 'human_wallet',
         human_wallet_address: humanWallet
@@ -84,7 +84,7 @@ describe('intentToolSchemas', () => {
       policy_bounds: policyBounds,
       requested_action: {
         user_instruction: 'send to my own wallet',
-        operation: 'execute_own_address',
+        operation: 'prepare_unsigned_transaction',
         simulation_receipt_id: 'receipt-123',
         own_address_destination: {
           wallet_role: 'human_wallet',

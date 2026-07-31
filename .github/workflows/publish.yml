@@ -56,6 +56,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm -r publish --access public --no-git-checks
+      - run: pnpm --filter @toreva/types publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.npm_token }}

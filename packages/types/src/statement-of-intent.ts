@@ -100,7 +100,7 @@ export interface CompileStatementOfIntentRequestV0 {
   // to support the Toreva Receipt Graph and AP2 adapter layer.
   source_statement_id?: string;
   source_statement_version?: number;
-  source_box_hash?: StatementOfIntentSha256Hash;
+  source_statement_hash?: StatementOfIntentSha256Hash;
   rule_refs?: string[];
   extensions?: Record<string, unknown>;
 }

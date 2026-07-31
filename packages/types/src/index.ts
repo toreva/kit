@@ -4,6 +4,7 @@ export * from './earn.js';
 export * from './intents.js';
 export * from './perps.js';
 export * from './relay.js';
+export * from './statement-of-intent.js';
 export * from './staking.js';
 export * from './treasury.js';
 export * from './wallet.js';

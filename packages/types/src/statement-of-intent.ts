@@ -95,6 +95,14 @@ export interface CompileStatementOfIntentRequestV0 {
   };
   fields: StatementOfIntentUserFields;
   provenance: Record<StatementOfIntentFieldKey, StatementOfIntentFieldProvenance>;
+  // Non-operative forward-compatibility extension fields (DEC-2026-058).
+  // All optional; absent in the v0 pilot. Future versions populate these
+  // to support the Toreva Receipt Graph and AP2 adapter layer.
+  source_statement_id?: string;
+  source_statement_version?: number;
+  source_statement_hash?: StatementOfIntentSha256Hash;
+  rule_refs?: string[];
+  extensions?: Record<string, unknown>;
 }
 
 export interface StatementOfIntentDraftV0 {
@@ -199,6 +207,14 @@ export interface CompileStatementOfIntentResponseV0 {
   };
   nothing_has_moved: true;
   nothing_has_moved_text: 'Nothing has moved.';
+  // Non-operative forward-compatibility extension fields (DEC-2026-058).
+  // All optional; absent in the v0 pilot. Future versions populate these
+  // to support the Toreva Receipt Graph and AP2 adapter layer.
+  rule_refs?: string[];
+  mandate_refs?: string[];
+  execution_refs?: string[];
+  receipt_refs?: string[];
+  extensions?: Record<string, unknown>;
 }
 
 export interface StatementOfIntentVersionRef {
@@ -223,4 +239,10 @@ export interface CommittedStatementOfIntentV0 {
   previous_version?: StatementOfIntentVersionRef;
   supersedes?: StatementOfIntentVersionRef;
   receipt_id: string;
+  // Non-operative forward-compatibility extension fields (DEC-2026-058).
+  rule_refs?: string[];
+  mandate_refs?: string[];
+  execution_refs?: string[];
+  receipt_refs?: string[];
+  extensions?: Record<string, unknown>;
 }

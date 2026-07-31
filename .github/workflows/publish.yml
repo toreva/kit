@@ -18,10 +18,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: npm install -g npm@latest
-      - run: npm publish --access public
+      - run: |
+          unset NODE_AUTH_TOKEN
+          npm publish --access public
         working-directory: packages/types

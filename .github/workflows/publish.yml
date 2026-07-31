@@ -1,7 +1,6 @@
 name: publish
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -17,12 +16,32 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/587188292103/locations/global/workloadIdentityPools/github-oidc-pool/providers/github
+          service_account: github-actions-toreva-kit@toreva-prod.iam.gserviceaccount.com
+      - id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@v2
+        with:
+          secrets: |-
+            npm_token:toreva-prod/npm-token-toreva-kit
+
+      # Litmus gate deliberately NOT run here.
+      # It probes the live MCP runtime (earn_lending, token_ops) and belongs to
+      # @toreva/mcp, not to a pure TypeScript types package. Coupling a types-only
+      # publish to production DeFi primitives blocked the golden thread on
+      # 2026-07-31. The gate's harness is ALSO broken: it posts tools/list without
+      # first calling MCP `initialize`, so prod correctly answers
+      # {"code":-32000,"message":"Server not initialized"} and the gate reads it as
+      # an outage. Verified healthy by hand: initialize -> mcp-session-id ->
+      # notifications/initialized -> tools/list returns 23 tools.
+      # Re-attach a FIXED gate to the @toreva/mcp publish path, not this one.
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: npm install -g npm@latest
-      - run: |
-          unset NODE_AUTH_TOKEN
-          npm publish --access public
-        working-directory: packages/types
+      - run: pnpm --filter @toreva/types publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.npm_token }}

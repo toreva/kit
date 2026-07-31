@@ -1,6 +1,6 @@
 {
   "name": "@toreva/types",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Policy-checked Solana wallet actions. Users set the limits. Toreva reads, simulates, prepares unsigned transactions, explains, and receipts every outcome.",
   "keywords": [
     "solana", "wallet-policy", "receipts", "delegation",

@@ -17,21 +17,11 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: projects/587188292103/locations/global/workloadIdentityPools/github-oidc-pool/providers/github
-          service_account: github-actions-toreva-kit@toreva-prod.iam.gserviceaccount.com
-      - id: secrets
-        uses: google-github-actions/get-secretmanager-secrets@v2
-        with:
-          secrets: |-
-            npm_token:toreva-prod/npm-token-toreva-kit
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm --filter @toreva/types publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.npm_token }}
+      - run: npm install -g npm@latest
+      - run: npm publish --access public
+        working-directory: packages/types

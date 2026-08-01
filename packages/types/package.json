@@ -23,6 +23,10 @@
     "./statement-of-intent": {
       "types": "./dist/statement-of-intent.d.ts",
       "import": "./dist/statement-of-intent.js"
+    },
+    "./intent-box": {
+      "types": "./dist/intent-box.d.ts",
+      "import": "./dist/intent-box.js"
     }
   },
   "files": ["dist"],

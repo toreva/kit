@@ -7,6 +7,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import { RelayClient } from './relay-client.js';
 import { withBranding } from './tools/branding.js';
 import { intentToolDefinitions, toIntentRelayRequest } from './tools/intents.js';
+import { isBoxPayload, renderTier1Box } from './tools/render-receipt-box.js';
 
 function toInputSchema(zodSchema: ZodTypeAny): Tool['inputSchema'] {
   const jsonSchema = zodToJsonSchema(zodSchema, { target: 'openApi3' }) as Record<string, unknown>;
@@ -55,14 +56,18 @@ export function createServer(relayClient: RelayClient): Server {
 
     const relayResponse = await relayClient.send(relayRequest);
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(withBranding(relayResponse), null, 2)
-        }
-      ]
-    };
+    const content: Array<{ type: 'text'; text: string }> = [];
+
+    // If the gateway returned a grammar Box render payload for the chatgpt surface,
+    // prepend the visual Tier-1 receipt so ChatGPT renders it before the raw JSON.
+    if (isBoxPayload(relayResponse.result)) {
+      const html = renderTier1Box({ ...relayResponse.result, surface: 'chatgpt' });
+      if (html) content.push({ type: 'text', text: html });
+    }
+
+    content.push({ type: 'text', text: JSON.stringify(withBranding(relayResponse), null, 2) });
+
+    return { content };
   });
 
   return server;

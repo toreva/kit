@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   COMPILE_STATEMENT_OF_INTENT_RESPONSE_STATES,
+  STATEMENT_OF_INTENT_PRIMITIVE_SET_ID,
   STATEMENT_OF_INTENT_FIELD_KEYS,
   statementOfIntentSha256HashPattern,
   type CompileStatementOfIntentResponseState,
@@ -130,6 +131,33 @@ describe('Statement of Intent v0 contract types', () => {
     expect(hash.box_hash).toBe('sha256:6555559793f7ca26d8128f0bba45dd4529c4c0ecdbeff716dda1dec3229d066b');
     expect(statementOfIntentSha256HashPattern.test('sha256:' + 'A'.repeat(64))).toBe(false);
     expect(statementOfIntentSha256HashPattern.test('sha256:' + 'a'.repeat(63))).toBe(false);
+  });
+
+  it('declares reopening_condition as the first intent primitive set entry', () => {
+    expect(STATEMENT_OF_INTENT_FIELD_KEYS).toContain('intent_primitives');
+
+    const fields = {
+      intent_verb: 'other',
+      goal_context: "Move Toreva's centre of gravity from the AI to the loop and the graph.",
+      intent_primitives: {
+        set_id: STATEMENT_OF_INTENT_PRIMITIVE_SET_ID,
+        entries: [
+          {
+            primitive_id: 'when.reopening_condition',
+            primitive_kind: 'condition',
+            dimension: 'when',
+            human_readable:
+              'Start when real user growth makes per-user AI cost a real line, or when anyone proposes a fourth verb vocabulary.',
+            predicate: 'real_user_growth_per_user_ai_cost_material || fourth_verb_vocabulary_proposed'
+          }
+        ]
+      }
+    } satisfies StatementOfIntentUserFields;
+
+    expect(fields.intent_primitives.entries[0]?.primitive_id).toBe('when.reopening_condition');
+    expect(fields).not.toHaveProperty('asset');
+    expect(fields).not.toHaveProperty('target_amount');
+    expect(fields).not.toHaveProperty('target_currency');
   });
 
   it('represents the target contribution shortfall acceptance fixture', () => {

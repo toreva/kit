@@ -204,4 +204,46 @@ describe('Toreva conversational box render contract', () => {
       })
     ).toBe('Buy A$500 of SOL.');
   });
+
+  it('shows a reopening condition from the intent primitive set', () => {
+    const box = buildIntentBoxFromCompileResponse(
+      compileResponse({
+        structured_draft: {
+          statement_of_intent_id: 'soi_wait_until',
+          version: 1,
+          state: 'pending_review',
+          artefact: 'StatementOfIntent',
+          fields: {
+            intent_verb: 'other',
+            goal_context: "Move Toreva's centre of gravity from the AI to the loop and the graph.",
+            intent_primitives: {
+              set_id: 'statement_of_intent.intent_primitives.v0',
+              entries: [
+                {
+                  primitive_id: 'when.reopening_condition',
+                  primitive_kind: 'condition',
+                  dimension: 'when',
+                  human_readable:
+                    'Start when real user growth makes per-user AI cost a real line, or when anyone proposes a fourth verb vocabulary.'
+                }
+              ]
+            }
+          },
+          provenance: provenance(),
+          chain_context: {
+            chain_id: 'unspecified',
+            chain_selected_by: 'missing'
+          }
+        }
+      }),
+      { surface: 'claude' }
+    );
+
+    expect(box?.primary_text).toBe("Move Toreva's centre of gravity from the AI to the loop and the graph.");
+    expect(box?.detail_rows).toContainEqual({
+      label: 'Reopen when',
+      value:
+        'Start when real user growth makes per-user AI cost a real line, or when anyone proposes a fourth verb vocabulary.'
+    });
+  });
 });

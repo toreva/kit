@@ -162,14 +162,23 @@ function assetLabel(fields: StatementOfIntentUserFields): string | undefined {
   return fields.asset?.symbol ?? fields.asset?.caip19;
 }
 
+function reopeningConditionLabel(fields: StatementOfIntentUserFields): string | undefined {
+  return fields.intent_primitives?.entries.find(
+    (entry) => entry.primitive_id === 'when.reopening_condition',
+  )?.human_readable;
+}
+
 export function summarizeStatementOfIntent(fields: StatementOfIntentUserFields): string {
   const verb = fields.intent_verb ? fields.intent_verb.charAt(0).toUpperCase() + fields.intent_verb.slice(1) : undefined;
   const target = formatMoney(fields.target_amount, fields.target_currency);
   const asset = assetLabel(fields);
+  const reopeningCondition = reopeningConditionLabel(fields);
 
   if (verb && target && asset) return `${verb} ${target} of ${asset}.`;
   if (verb && asset) return `${verb} ${asset}.`;
   if (target && asset) return `${target} of ${asset}.`;
+  if (fields.goal_context) return fields.goal_context.endsWith('.') ? fields.goal_context : `${fields.goal_context}.`;
+  if (reopeningCondition) return `Wait until ${reopeningCondition}.`;
   if (verb) return `${verb}.`;
   return 'Statement of Intent.';
 }
@@ -183,6 +192,8 @@ function detailRowsFromFields(fields: StatementOfIntentUserFields): TorevaIntent
   if (contribution) rows.push({ label: 'Contribution max', value: contribution });
   if (fields.contribution_frequency) rows.push({ label: 'Frequency', value: fields.contribution_frequency });
   if (fields.target_date) rows.push({ label: 'Target date', value: fields.target_date });
+  const reopeningCondition = reopeningConditionLabel(fields);
+  if (reopeningCondition) rows.push({ label: 'Reopen when', value: reopeningCondition });
 
   return rows;
 }

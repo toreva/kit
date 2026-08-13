@@ -22,7 +22,8 @@ export type StatementOfIntentFieldKey =
   | 'chain_context'
   | 'goal_context'
   | 'risk_constraint'
-  | 'liquidity_constraint';
+  | 'liquidity_constraint'
+  | 'intent_primitives';
 
 export const STATEMENT_OF_INTENT_FIELD_KEYS: readonly StatementOfIntentFieldKey[] = [
   'intent_verb',
@@ -37,7 +38,8 @@ export const STATEMENT_OF_INTENT_FIELD_KEYS: readonly StatementOfIntentFieldKey[
   'chain_context',
   'goal_context',
   'risk_constraint',
-  'liquidity_constraint'
+  'liquidity_constraint',
+  'intent_primitives',
 ] as const;
 
 export type StatementOfIntentFieldAuthorship = 'user_authored' | 'missing';
@@ -61,6 +63,27 @@ export interface StatementOfIntentMoney {
   currency: string;
 }
 
+export const STATEMENT_OF_INTENT_PRIMITIVE_SET_ID = 'statement_of_intent.intent_primitives.v0';
+
+export type StatementOfIntentPrimitiveId = 'when.reopening_condition';
+
+export interface StatementOfIntentReopeningConditionPrimitive {
+  primitive_id: 'when.reopening_condition';
+  primitive_kind: 'condition';
+  dimension: 'when';
+  /** Human-readable trigger the user expressed verbatim or closely paraphrased. */
+  human_readable: string;
+  /** Optional machine-checkable predicate string. Store only; evaluation lives outside this contract. */
+  predicate?: string;
+}
+
+export type StatementOfIntentPrimitive = StatementOfIntentReopeningConditionPrimitive;
+
+export interface StatementOfIntentPrimitiveSet {
+  set_id: typeof STATEMENT_OF_INTENT_PRIMITIVE_SET_ID;
+  entries: StatementOfIntentPrimitive[];
+}
+
 export interface StatementOfIntentUserFields {
   intent_verb?: 'buy' | 'hold' | 'earn' | 'stake' | 'save' | 'accumulate' | 'other';
   asset?: StatementOfIntentAssetRef;
@@ -75,6 +98,8 @@ export interface StatementOfIntentUserFields {
   goal_context?: string;
   risk_constraint?: string;
   liquidity_constraint?: string;
+  /** Named primitive set for intent diversity beyond the financial extension fields. */
+  intent_primitives?: StatementOfIntentPrimitiveSet;
 }
 
 export interface CompileStatementOfIntentRequestV0 {

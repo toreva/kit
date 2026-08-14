@@ -9,3 +9,4 @@ export * from './statement-of-intent.js';
 export * from './staking.js';
 export * from './treasury.js';
 export * from './wallet.js';
+export * from './work-surface.js';

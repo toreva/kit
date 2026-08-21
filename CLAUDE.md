@@ -335,3 +335,81 @@ Today's filesystem transport is build-mode only. When Toreva crosses $10k MRR, w
 See: `coordinator/docs/bus-ops-phase-1b/` for the full cloud design, and the memory `project_local_daemon_pivot.md` for the 2026-04-21 decision.
 
 ## END CANONICAL BLOCK
+
+## BEGIN VERIFICATION BLOCK — do not edit in-repo
+
+# VERIFY THE OUTCOME, NOT THE CHANGE — read before reporting anything complete
+
+**This block is a top-priority rule. It applies to every agent, every repo, and
+every status you write.**
+
+## The rule
+
+> Verify the **outcome you are claiming**, in the **user's environment**, at the
+> **depth the claim implies**.
+
+Not the thing you changed. If the claim is "X works", the check is *load X and
+confirm it is X* — never "the code that should make X work changed".
+
+## Where this came from
+
+Over three days the founder personally found eleven defects in surfaces that had
+been reported as fixed. They were not eleven mistakes. They were one habit in
+different clothes. Every check was green; the product was broken.
+
+| what was verified | what was claimed | what he hit |
+|---|---|---|
+| no link to the old app in the top bar | "no way back" | two other doors |
+| two routes closed | "no way back" | both opened *into* the old app |
+| the top bar links to `/work/settings` | "Settings works" | it rendered a different screen |
+| CSS says `overflow-y: auto` | "scrolling is fixed" | iOS never scrolled |
+| a WebKit test passed | "proven in WebKit" | it passed on the broken build |
+| a PR was opened | "it's shipped" | never merged |
+| main was merged | "it's live" | not deployed |
+| a one-item fixture rendered | "the surface works" | real data overflowed |
+
+## The five disguises — all of them pass CI
+
+1. **Narrower than the claim.** Assert an instance, claim a property.
+2. **One hop deep.** Check which doors exist; never open them. A transitive
+   property needs a transitive check.
+3. **Wrong environment.** Wrong engine, wrong origin, wrong fixture, wrong build.
+   A green localhost proof and a broken production app are compatible states.
+4. **File content instead of behaviour.** "The link points there" and "the file
+   exists" say nothing about what loads. A link test proves a door is *labelled*,
+   never that the room behind it is the right room.
+5. **Your clock, not theirs.** Merged is not deployed. Deployed is not serving.
+
+## Before you write `Status: completed`
+
+Answer these three, one line each, in your response:
+
+1. What did I **load** to prove it — not what did I read or change?
+2. Was that the **origin, engine and data** the person reporting it uses?
+3. Is it **serving**, or merely merged?
+
+If you cannot answer all three, the honest status is `in_progress`.
+
+## Two corollaries that cost the most
+
+**A control written from an instance is usually blind to that instance's
+siblings.** When you write a control, check whether it would have caught the
+other members of the family. If not, you wrote a regression test, not a control.
+
+**Confirm a control RUNS before citing it.** A test that skips, a detector never
+pushed, a gate that reports without blocking — citing an inert control is worse
+than having none, because it ends the investigation. The `proof_that_never_runs`
+shape detector now scans the fleet hourly for exactly this and found sixteen dead
+proofs across five repos on its first correct run, including an entire financial
+slippage-bounds suite.
+
+**And a finding that names the wrong cause is worse than no finding**, because it
+buys a wasted fix and a fresh all-clear. Before dispatching a detector's output,
+open one flagged instance and confirm the stated mechanism is the real one.
+
+## Canonical source
+
+`po/docs/doctrine/verification-metacognition-2026-08-22.md`
+Companion: `po/docs/doctrine/unverified-edges-2026-08-22.md`
+
+## END VERIFICATION BLOCK

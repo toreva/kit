@@ -67,6 +67,40 @@ export interface RecoveryResult {
   txSignatures: string[];
 }
 
+type PacificaRecoveryAccountReader =
+  | 'pacifica.recovery.positions.by_account.v1'
+  | 'pacifica.recovery.balances.by_account.v1';
+
+interface PacificaRecoveryAccountQueryContract {
+  producer: 'kit.examples.recovery.recoverFromPacifica';
+  consumer: PacificaRecoveryAccountReader;
+  endpoint: '/positions' | '/account/balances';
+  queryField: 'account';
+}
+
+const PACIFICA_RECOVERY_ACCOUNT_QUERY_CONTRACTS = {
+  positionsByAccount: {
+    producer: 'kit.examples.recovery.recoverFromPacifica',
+    consumer: 'pacifica.recovery.positions.by_account.v1',
+    endpoint: '/positions',
+    queryField: 'account',
+  },
+  balancesByAccount: {
+    producer: 'kit.examples.recovery.recoverFromPacifica',
+    consumer: 'pacifica.recovery.balances.by_account.v1',
+    endpoint: '/account/balances',
+    queryField: 'account',
+  },
+} as const satisfies Record<string, PacificaRecoveryAccountQueryContract>;
+
+function buildPacificaAccountQueryPath(
+  contract: PacificaRecoveryAccountQueryContract,
+  account: string,
+): string {
+  const params = new URLSearchParams({ [contract.queryField]: account });
+  return `${contract.endpoint}?${params.toString()}`;
+}
+
 // ─── Main recovery function ────────────────────────────────────────────────────
 
 /**
@@ -88,7 +122,13 @@ export async function recoverFromPacifica(config: RecoveryConfig): Promise<Recov
   const { keypair } = config;
 
   // ─── 1. Query open positions ──────────────────────────────────────────────
-  const positionsJson = await pacificaGet(base, `/positions?account=${keypair.publicKey}`);
+  const positionsJson = await pacificaGet(
+    base,
+    buildPacificaAccountQueryPath(
+      PACIFICA_RECOVERY_ACCOUNT_QUERY_CONTRACTS.positionsByAccount,
+      keypair.publicKey,
+    ),
+  );
   const positions = (positionsJson as { positions?: PacificaPosition[] }).positions ?? [];
 
   // ─── 2. Close each open position ─────────────────────────────────────────
@@ -118,7 +158,13 @@ export async function recoverFromPacifica(config: RecoveryConfig): Promise<Recov
   }
 
   // ─── 3. Query margin balances ─────────────────────────────────────────────
-  const balancesJson = await pacificaGet(base, `/account/balances?account=${keypair.publicKey}`);
+  const balancesJson = await pacificaGet(
+    base,
+    buildPacificaAccountQueryPath(
+      PACIFICA_RECOVERY_ACCOUNT_QUERY_CONTRACTS.balancesByAccount,
+      keypair.publicKey,
+    ),
+  );
   const balances = (balancesJson as { balances?: PacificaBalance[] }).balances ?? [];
 
   // ─── 4. Withdraw each non-zero balance ───────────────────────────────────

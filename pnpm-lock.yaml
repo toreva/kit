@@ -39,7 +39,7 @@ importers:
         specifier: ^1.12.0
         version: 1.28.0(zod@3.25.76)
       '@toreva/types':
-        specifier: workspace:^0.2.0
+        specifier: workspace:^0.3.0
         version: link:../types
       zod:
         specifier: ^3.24.2

@@ -1,0 +1,65 @@
+name: publish-mcp
+
+on:
+  push:
+    tags:
+      - 'mcp-v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Verify release version
+        run: |
+          version="${GITHUB_REF_NAME#mcp-v}"
+          test "$(jq -r .version packages/mcp/package.json)" = "$version"
+          test "$(jq -r .version server.json)" = "$version"
+          test "$(jq -r '.packages[] | select(.identifier == "@toreva/mcp") | .version' server.json)" = "$version"
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+
+      - name: Verify the installable package
+        run: |
+          mkdir -p /tmp/toreva-mcp-pack /tmp/toreva-mcp-install
+          pnpm --dir packages/mcp pack --pack-destination /tmp/toreva-mcp-pack
+          npm install --prefix /tmp/toreva-mcp-install /tmp/toreva-mcp-pack/toreva-mcp-*.tgz
+          test -x /tmp/toreva-mcp-install/node_modules/.bin/toreva-mcp
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/587188292103/locations/global/workloadIdentityPools/github-oidc-pool/providers/github
+          service_account: github-actions-toreva-kit@toreva-prod.iam.gserviceaccount.com
+      - id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@v2
+        with:
+          secrets: |-
+            npm_token:toreva-prod/npm-token-toreva-kit
+
+      - name: Publish @toreva/mcp to npm
+        run: pnpm --filter @toreva/mcp publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.npm_token }}
+
+      - name: Install MCP Registry publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Publish to the official MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish server.json

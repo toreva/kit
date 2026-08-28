@@ -16,8 +16,7 @@ describe('public MCP metadata', () => {
     const mcpPackage = JSON.parse(readRootFile('packages/mcp/package.json'));
     const typesPackage = JSON.parse(readRootFile('packages/types/package.json'));
 
-    expect(server.description).toContain('Policy-checked Solana wallet actions');
-    expect(server.description.length).toBeLessThanOrEqual(100);
+    expect(server.description).toBe(CANONICAL_TAGLINE);
     expect(mcpPackage.description).toBe(CANONICAL_TAGLINE);
     expect(typesPackage.description).toBe(CANONICAL_TAGLINE);
   });
@@ -25,8 +24,12 @@ describe('public MCP metadata', () => {
   it('does not advertise excluded venues or product families in MCP metadata', () => {
     const publicText = [
       readRootFile('README.md'),
+      readRootFile('docs/work-surface-connector-primitives.md'),
       readRootFile('server.json'),
+      readRootFile('packages/cli/package.json'),
       readRootFile('packages/mcp/package.json'),
+      readRootFile('packages/sdk/package.json'),
+      readRootFile('packages/sdk/README.md'),
       readRootFile('packages/types/package.json')
     ].join('\n');
 
@@ -38,8 +41,12 @@ describe('public MCP metadata', () => {
   it('public metadata does not include raw signer or secret material keys', () => {
     const publicText = [
       readRootFile('README.md'),
+      readRootFile('docs/work-surface-connector-primitives.md'),
       readRootFile('server.json'),
+      readRootFile('packages/cli/package.json'),
       readRootFile('packages/mcp/package.json'),
+      readRootFile('packages/sdk/package.json'),
+      readRootFile('packages/sdk/README.md'),
       readRootFile('packages/types/package.json')
     ].join('\n');
 

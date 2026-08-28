@@ -11,4 +11,4 @@ export const TOREVA_VENUES: readonly VenueInfo[] = [
 ] as const;
 
 export const CANONICAL_TAGLINE =
-  'Policy-checked Solana wallet actions. Users set the limits. Toreva reads, simulates, prepares unsigned transactions, explains, and receipts every outcome.';
+  'Connector primitives for Toreva governed objects. Bring your own compute, use the gateway relay, and require receipts for every outcome.';

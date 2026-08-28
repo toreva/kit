@@ -140,6 +140,9 @@ describe('work-surface primitive documentation', () => {
     expect(doc).toContain('do not route orders');
     expect(doc).toContain('gateway returns a `receipt_id`');
     expect(doc).toContain('legacy venue aliases');
+    expect(doc).not.toMatch(/Jupiter|Pacifica|Drift|Flash Trade/i);
+    expect(doc).not.toMatch(/perps|perpetual|earn|yield|staking/i);
+    expect(doc).not.toMatch(/best-execution/i);
     expect(doc).not.toContain('launch-gated');
     expect(doc).not.toContain('Recommended W1 Path');
     expect(doc).not.toContain('Launch Gate');

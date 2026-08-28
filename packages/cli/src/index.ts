@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-import { runPerpsCommand } from './commands/perps.js';
-import { runScanCommand } from './commands/scan.js';
 import { parseInitArgs, runInit } from './commands/init.js';
 import { runLogin } from './commands/login.js';
 import { formatReport, runDoctor } from './commands/doctor.js';
-import { runEarnCompareCommand } from './commands/earn-compare.js';
-import { runTokenReceiveCommand } from './commands/token-receive.js';
 import { SUPPORTED_CLIENTS } from './clients.js';
 
 const USAGE = `Usage: toreva <command> [args]
@@ -16,20 +12,9 @@ Setup commands:
   toreva login            Authenticate via the Toreva gateway (device-code flow)
   toreva doctor           Verify install + token + first MCP call
 
-R1 read-only primitives (no auth required, calls mcp.toreva.com):
-  toreva earn-compare --asset USDC --venue <kamino|marginfi>
-                          Compare current USDC lending APY at an admitted venue
-  toreva token-receive --wallet <address> [--limit <n>]
-                          Scan a wallet for recent inbound SPL token transfers
-
-Power-user commands:
-  toreva scan <wallet> [prompt]
-  toreva perps <toolName> [jsonPayload]   (DISCOVERY_ONLY — execution lands in R3)
-
 Environment:
   TOREVA_MCP_URL          Override gateway URL (default: https://mcp.toreva.com)
   TOREVA_AUTH_TOKEN       Skip device-code flow and persist this token directly
-  TOREVA_API_KEY          Bearer token used for R1 read-only primitives
   TOREVA_CONFIG_DIR       Override the on-disk config directory
 `;
 
@@ -68,35 +53,6 @@ async function main(): Promise<void> {
       const report = await runDoctor();
       console.log(formatReport(report));
       if (!report.ok) process.exit(1);
-      return;
-    }
-
-    case 'earn-compare': {
-      await runEarnCompareCommand(args);
-      return;
-    }
-
-    case 'token-receive': {
-      await runTokenReceiveCommand(args);
-      return;
-    }
-
-    case 'scan': {
-      const [wallet = '', prompt = 'scan wallet'] = args;
-      await runScanCommand(wallet, prompt);
-      return;
-    }
-
-    case 'perps': {
-      const [toolName = 'toreva_perps_query_markets', payload = '{}'] = args;
-      let parsed: Record<string, unknown>;
-      try {
-        parsed = JSON.parse(payload) as Record<string, unknown>;
-      } catch {
-        console.error(`Invalid JSON payload: ${payload}`);
-        process.exit(1);
-      }
-      await runPerpsCommand(toolName as never, parsed);
       return;
     }
 

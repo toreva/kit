@@ -10,9 +10,6 @@
   "exclude": [
     "src/__tests__/**/*.ts",
     "src/tools/catalog.ts",
-    "src/tools/earn.ts",
-    "src/tools/perps.ts",
-    "src/tools/staking.ts",
     "src/tools/wallet.ts"
   ]
 }

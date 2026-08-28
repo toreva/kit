@@ -58,7 +58,7 @@ Out of scope:
 - Supporting non-Solana chains (Day 1 scope)
 
 ## Key inputs
-- Gateway API responses (auth, intents, receipts, pricing, strategies, perps)
+- Gateway API responses (auth, intents, receipts, governed objects)
 - RELAY_AUTH_TOKEN for authentication
 - User commands (CLI), function calls (SDK), or tool invocations (MCP)
 

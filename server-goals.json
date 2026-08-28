@@ -8,7 +8,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://gateway.toreva.com/mcp"
+      "url": "https://gateway.toreva.com/mcp?surface=goals"
     }
   ]
 }

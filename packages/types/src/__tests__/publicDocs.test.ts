@@ -11,12 +11,13 @@ function readRootFile(path: string) {
 }
 
 describe('public MCP metadata', () => {
-  it('uses the same license-envelope description in server and MCP package metadata', () => {
+  it('keeps package metadata canonical and Registry metadata within its contract', () => {
     const server = JSON.parse(readRootFile('server.json'));
     const mcpPackage = JSON.parse(readRootFile('packages/mcp/package.json'));
     const typesPackage = JSON.parse(readRootFile('packages/types/package.json'));
 
-    expect(server.description).toBe(CANONICAL_TAGLINE);
+    expect(server.description).toContain('Policy-checked Solana wallet actions');
+    expect(server.description.length).toBeLessThanOrEqual(100);
     expect(mcpPackage.description).toBe(CANONICAL_TAGLINE);
     expect(typesPackage.description).toBe(CANONICAL_TAGLINE);
   });

@@ -44,4 +44,16 @@ describe('public MCP metadata', () => {
 
     expect(publicText.toLowerCase()).not.toMatch(/privatekey|private_key|seedphrase|seed_phrase|apisecret|api_secret/);
   });
+
+  it('makes the root README the compute-binding entry point', () => {
+    const readme = readRootFile('README.md');
+
+    expect(readme).toContain('## The Three Doors');
+    expect(readme).toContain('### Door 1: MCP');
+    expect(readme).toContain('### Door 2: Customer-Owned Fleet');
+    expect(readme).toContain('### Door 3: Hosted Compute');
+    expect(readme).toContain('[GitHub Org Agent Fleet](./docs/github-org-agent-fleet.md)');
+    expect(readme).toContain('This door is deferred and is not documented as available');
+    expect(readme).toContain('gateway returns a `receipt_id`');
+  });
 });

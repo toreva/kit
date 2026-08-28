@@ -126,11 +126,15 @@ describe('work-surface primitive documentation', () => {
     const doc = readRootFile('docs/work-surface-connector-primitives.md');
 
     expect(doc).toContain('## Minimum Primitive Set');
+    expect(doc).toContain('## Compute Binding Doors');
     expect(doc).toContain('## Install And Configure Shape');
     expect(doc).toContain('## Invocation Shape');
     expect(doc).toContain('## Receipt Return Shape');
     expect(doc).toContain('## Connector Readiness Checklist');
     expect(doc).toContain('## Non-Execution Boundary');
+    expect(doc).toContain('The front door is the object store');
+    expect(doc).toContain('do not require Toreva to hold a per-user AI API key');
+    expect(doc).toContain('[GitHub Org Agent Fleet](./github-org-agent-fleet.md)');
     expect(doc).toContain('does not add');
     expect(doc).toContain('execution business logic');
     expect(doc).toContain('do not route orders');
@@ -140,5 +144,19 @@ describe('work-surface primitive documentation', () => {
     expect(doc).not.toContain('Recommended W1 Path');
     expect(doc).not.toContain('Launch Gate');
     expect(doc).not.toContain('OpenClaw');
+  });
+
+  it('documents the customer-owned GitHub fleet path', () => {
+    const doc = readRootFile('docs/github-org-agent-fleet.md');
+
+    expect(doc).toContain('GitHub is entity identity only');
+    expect(doc).toContain('Toreva does not need, receive, or hold those model');
+    expect(doc).toContain('## Dispatch Transport');
+    expect(doc).toContain('## Answer Landing');
+    expect(doc).toContain('POST https://gateway.toreva.com/relay');
+    expect(doc).toContain('toreva_governed_object_upsert');
+    expect(doc).toContain('The usable proof is the returned');
+    expect(doc).toContain('Hosted Toreva compute is not required');
+    expect(doc).not.toContain('protocolId');
   });
 });

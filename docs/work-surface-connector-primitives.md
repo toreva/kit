@@ -6,6 +6,10 @@ This reference defines Kit's public primitive shapes for unattended work
 surfaces. It covers SDK, API, MCP, and CLI contracts only. It does not add
 execution business logic, move funds, or authorize customer action by itself.
 
+The front door is the object store behind the gateway relay. GitHub or another
+identity provider may establish who controls a scope, but work still lands by
+reading or writing Toreva objects and receiving a `receipt_id`.
+
 ## Scope
 
 Work surfaces include coding tools, daemon runners, scheduled agents, and
@@ -16,6 +20,21 @@ HTTPS at `https://gateway.toreva.com/relay`.
 Toreva governance applies only to agents that route through Toreva for state or
 authority Toreva holds. A caller that never invokes Toreva is outside this
 connector's governance claim.
+
+## Compute Binding Doors
+
+Compute is selected per scope. The shared primitive set below applies after a
+scope chooses one of these doors:
+
+| Door | Who runs compute | Status | Kit role |
+| --- | --- | --- | --- |
+| `mcp` | The person's own AI client or local MCP host | Live | Install the MCP connector, authenticate, call tools, and return receipts |
+| `fleet` | The organization's own runners or daemon agents | Live pattern | Provide MCP, SDK, CLI, relay, and receipt shapes for customer-owned agents |
+| `hosted` | Toreva-hosted agents | Deferred | Not documented as available |
+
+The `mcp` and `fleet` paths do not require Toreva to hold a per-user AI API key.
+For a GitHub organization fleet, see
+[GitHub Org Agent Fleet](./github-org-agent-fleet.md).
 
 ## Minimum Primitive Set
 

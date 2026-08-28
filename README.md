@@ -8,32 +8,60 @@
 
 # toreva kit
 
-Policy-checked Solana wallet actions for MCP clients.
+Kit is the public client layer for connecting user-owned compute to Toreva
+governed objects.
 
-Users set the limits. Toreva reads, simulates, prepares unsigned transactions,
-explains, and receipts every outcome. The user signs elsewhere.
+The front door is the object store. MCP clients, SDK callers, CLI users, and
+customer-owned agent fleets all read and write the same Toreva objects through
+the gateway relay, and every accepted, pending, or refused outcome returns a
+receipt.
+
+GitHub can prove which organization and admin are acting. It is not the
+transport for Toreva work messages. Compute is bound per scope, and the live
+paths put model execution on the developer's own account.
 
 No money moves through this connector.
 
-## Establish your wallet
+## The Three Doors
 
-Use `toreva_establish_agent_wallet` to set up an agent wallet with hard limits.
-Your main wallet stays the root owner. Toreva does not hold a private key or a
-key share. Every setup returns a receipt.
+### Door 1: MCP
+
+Use this first. Your AI client connects the Toreva MCP server, your own client
+subscription does the work, and Toreva receives only the object reads and writes
+you authorize.
 
 ```bash
-toreva_establish_agent_wallet({
-  human_wallet_address: "your-wallet-address",
-  policy_bounds: {
-    daily_notional_lamports: 1000000,
-    operations_per_day: 3,
-    cooldown_seconds: 60,
-    risk_tier_ceiling: "low",
-    allowed_operations: ["read", "scan", "simulate", "prepare_unsigned_transaction"],
-    valid_until: null
-  }
-})
+npx toreva init --client=claude-desktop
+npx toreva login
+npx toreva doctor
 ```
+
+Restart the client, then ask it about your Toreva objects or receipts. Supported
+client config targets are `claude-desktop`, `cursor`, and `openclaw`.
+
+### Door 2: Customer-Owned Fleet
+
+Use this when you need unattended or scheduled agents. A GitHub organization
+admin runs agents in their own org, on their own runners, with their own model
+credentials. The agents call Toreva through MCP, SDK, or CLI and land answers
+back on Toreva objects with `receipt_id` proof.
+
+Start here: [GitHub Org Agent Fleet](./docs/github-org-agent-fleet.md).
+
+### Door 3: Hosted Compute
+
+Hosted compute means Toreva runs the agents and carries the marginal model
+cost. This door is deferred and is not documented as available. Use MCP or a
+customer-owned fleet today.
+
+## How Answers Land
+
+The object store is the receiving system. A work surface prepares a relay
+request, sends it to `https://gateway.toreva.com/relay`, and treats the result
+as accepted only when the gateway returns a `receipt_id`.
+
+For the shared install, invoke, and receipt shapes, see
+[Work-Surface Connector Primitives](./docs/work-surface-connector-primitives.md).
 
 ## MCP Tools
 

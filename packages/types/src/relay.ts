@@ -1,5 +1,3 @@
-import type { FeeSchedule } from './treasury.js';
-
 export interface RelayRequest<TPayload = unknown> {
   type: string;
   toolName: string;
@@ -17,10 +15,4 @@ export interface RelayResponse<TResult = unknown> {
   result?: TResult;
   error?: string;
   meta?: RelayMeta;
-}
-
-export interface RelayTreasury {
-  feeSchedule: FeeSchedule;
-  feeWallet: string;
-  mevWallet: string;
 }

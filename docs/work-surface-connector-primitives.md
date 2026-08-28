@@ -1,6 +1,6 @@
 # Work-Surface Connector Primitives
 
-Non-custodial execution primitives for Solana. Best-execution routing across Jupiter Perps, Pacifica, Drift, and Flash Trade. 1 bps to open. Everything else is free.
+Connector primitives for Toreva governed objects. Bring your own compute, use the gateway relay, and require receipts for every outcome.
 
 This reference defines Kit's public primitive shapes for unattended work
 surfaces. It covers SDK, API, MCP, and CLI contracts only. It does not add

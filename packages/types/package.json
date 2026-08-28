@@ -1,11 +1,10 @@
 {
   "name": "@toreva/types",
   "version": "0.3.0",
-  "description": "Policy-checked Solana wallet actions. Users set the limits. Toreva reads, simulates, prepares unsigned transactions, explains, and receipts every outcome.",
+  "description": "Connector primitives for Toreva governed objects. Bring your own compute, use the gateway relay, and require receipts for every outcome.",
   "keywords": [
-    "solana", "wallet-policy", "receipts", "delegation",
-    "non-custodial", "unsigned-transactions",
-    "typescript", "types"
+    "gateway", "governed-objects", "receipts", "relay",
+    "compute-binding", "typescript", "types"
   ],
   "repository": {
     "type": "git",

@@ -77,10 +77,18 @@ For the shared install, invoke, and receipt shapes, see
 
 ## Install
 
-The local package runs over stdio. Install and run it yourself:
+The local package runs over stdio. Use either the token written by
+`toreva login` or an explicit `RELAY_AUTH_TOKEN` from your own secret store.
 
 ```bash
 npm install -g @toreva/mcp
+toreva login
+toreva-mcp
+```
+
+For runner-owned environments:
+
+```bash
 RELAY_AUTH_TOKEN=your_token toreva-mcp
 ```
 

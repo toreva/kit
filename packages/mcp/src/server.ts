@@ -4,6 +4,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema, type Tool } from '@model
 import { intentToolSchemas } from '@toreva/types';
 import type { ZodTypeAny } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import { resolveRuntimeConfig } from './config.js';
 import { RelayClient } from './relay-client.js';
 import { withBranding } from './tools/branding.js';
 import { intentToolDefinitions, toIntentRelayRequest } from './tools/intents.js';
@@ -74,13 +75,7 @@ export function createServer(relayClient: RelayClient): Server {
 }
 
 export async function runServer(): Promise<void> {
-  const relayUrl = process.env.RELAY_URL ?? 'https://gateway.toreva.com';
-  const relayAuthToken = process.env.RELAY_AUTH_TOKEN;
-
-  if (!relayAuthToken) {
-    throw new Error('RELAY_AUTH_TOKEN is required');
-  }
-
+  const { relayUrl, relayAuthToken } = resolveRuntimeConfig();
   const server = createServer(new RelayClient({ relayUrl, relayAuthToken }));
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -1,6 +1,7 @@
 name: publish-mcp
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'mcp-v*'
@@ -21,11 +22,15 @@ jobs:
           cache: pnpm
 
       - name: Verify release version
+        id: release
         run: |
-          version="${GITHUB_REF_NAME#mcp-v}"
-          test "$(jq -r .version packages/mcp/package.json)" = "$version"
-          test "$(jq -r .version server.json)" = "$version"
-          test "$(jq -r '.packages[] | select(.identifier == "@toreva/mcp") | .version' server.json)" = "$version"
+          package_version="$(jq -r .version packages/mcp/package.json)"
+          test "$(jq -r .version server.json)" = "$package_version"
+          test "$(jq -r '.packages[] | select(.identifier == "@toreva/mcp") | .version' server.json)" = "$package_version"
+          if [[ "$GITHUB_REF" == refs/tags/mcp-v* ]]; then
+            test "${GITHUB_REF_NAME#mcp-v}" = "$package_version"
+          fi
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
@@ -39,25 +44,42 @@ jobs:
           npm install --prefix /tmp/toreva-mcp-install /tmp/toreva-mcp-pack/toreva-mcp-*.tgz
           test -x /tmp/toreva-mcp-install/node_modules/.bin/toreva-mcp
 
+      - name: Install MCP Registry publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Validate MCP Registry metadata
+        run: ./mcp-publisher validate server.json
+
+      - name: Check npm release state
+        id: npm_release
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if npm view "@toreva/mcp@$VERSION" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - id: auth
+        if: steps.npm_release.outputs.exists != 'true'
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: projects/587188292103/locations/global/workloadIdentityPools/github-oidc-pool/providers/github
           service_account: github-actions-toreva-kit@toreva-prod.iam.gserviceaccount.com
       - id: secrets
+        if: steps.npm_release.outputs.exists != 'true'
         uses: google-github-actions/get-secretmanager-secrets@v2
         with:
           secrets: |-
             npm_token:toreva-prod/npm-token-toreva-kit
 
       - name: Publish @toreva/mcp to npm
+        if: steps.npm_release.outputs.exists != 'true'
         run: pnpm --filter @toreva/mcp publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ steps.secrets.outputs.npm_token }}
-
-      - name: Install MCP Registry publisher
-        run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
 
       - name: Publish to the official MCP Registry
         run: |

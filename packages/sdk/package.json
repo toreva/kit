@@ -1,6 +1,6 @@
 {
   "name": "@toreva/sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "TypeScript client for Toreva gateway relay and governed-object connectors.",
   "keywords": [
     "gateway", "governed-objects", "receipts", "relay",

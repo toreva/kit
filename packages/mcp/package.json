@@ -1,6 +1,6 @@
 {
   "name": "@toreva/mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "mcpName": "io.github.toreva/kit",
   "description": "Connector primitives for Toreva governed objects. Bring your own compute, use the gateway relay, and require receipts for every outcome.",
   "keywords": [

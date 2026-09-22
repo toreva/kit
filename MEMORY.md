@@ -77,6 +77,28 @@ Curated Pareto entries — keep top ~20 by utility. Overflow migrates to **Super
   evidence: measured
   promote: candidate
 
+- id: mem.kit.20260922.repo-frozen-burst-reopen
+  title: Burst-reopened stale PR heads can look like frozen useful work
+  type: lesson
+  captured: 2026-09-22
+  source: codex
+  session_ref: intake/pending-dispatches/2026-09-22-po-kit-founder-proxy-finding-routed-by-po-repo-frozen-1-8ac47ff7674517685a3ce4ea.md
+  objectives: [OBJ-08]
+  summary: >
+    A 17-PR repo_frozen finding was caused by a burst of resurfaced stale
+    branches, not a bad required-check name. Branch protection required only the
+    real GitHub Actions `build` context, but the burst-opened PR heads had only
+    CodeQL/dynamic runs and no `ci` workflow run. Two-dot net diffs showed many
+    branches would delete current workflows, docs, package files, or tests, and
+    the bus-publisher variants were already superseded on main. The safe
+    resolution was to close stale/duplicate non-draft PRs and add explicit hold
+    sections to legitimate drafts; future sweep tools should classify duplicate
+    patch IDs, net-destructive stale branches, draft/hold PRs, and missing
+    required contexts before counting or reopening queue items.
+  applies_when: any repo_frozen / stale PR burst / uncommitted-sweep finding
+  evidence: measured
+  promote: candidate
+
 ---
 
 ## Open questions

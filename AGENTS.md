@@ -250,3 +250,117 @@ Today's filesystem transport is build-mode only. When Toreva crosses $10k MRR, w
 See: `coordinator/docs/bus-ops-phase-1b/` for the full cloud design, and the memory `project_local_daemon_pivot.md` for the 2026-04-21 decision.
 
 ## END CANONICAL BLOCK
+
+## BEGIN KERNEL DOCTRINE BLOCK — route-true-verification-and-lesson-controls — do not edit in-repo
+
+<!-- Canonical source: `kernel/docs/doctrine/route-true-verification-and-lesson-controls.md` -->
+
+# Route-true verification and lesson controls (CLASS-120)
+
+Last updated: 2026-09-29
+Status: **Canonical** - applies fleet-wide to any agent answering "is it fixed?"
+or promoting a lesson from an incident.
+Authority: po#1887 OAuth 401 incident, comment 5880028775; kernel adoption
+2026-09-29.
+
+---
+
+## The Rule
+
+Check the path a person uses, never a proxy for it.
+
+When the claim is "the reported issue is fixed", the proof is to replay the
+reporter's exact request class on the real route:
+
+1. same public host or entrypoint;
+2. same session class or unauthenticated/authenticated posture;
+3. same route family the person used, not only `/health`;
+4. same serving chain: host -> load balancer or gateway -> backend/NEG ->
+   region -> revision;
+5. same deployed revision environment, not a stubbed test environment.
+
+The completion evidence must state what was loaded, where it was loaded, and
+whether that object is serving.
+
+## What Failed
+
+The OAuth 401 connector incident was not caught internally for about 33 days
+because three proxies passed while the person path was broken:
+
+- `/health` was checked instead of the authorization path.
+- A service name was treated as the route even though the route is host ->
+  load balancer -> NEG -> region -> revision.
+- Tests used stubbed env rather than reading the deployed revision's env.
+
+The diagnosing loop then stopped at the first plausible cause ("sign in first"),
+verified by service name, read a stale off-route copy, and reported a live fix
+as not live twice. The learning loop only corrected after the founder contradicted
+the diagnosis by succeeding on the live path.
+
+## Preventing Mechanism
+
+1. Use route-true readback for every deploy or fix proof: read the serving
+   route and the serving revision, then assert required env on that revision.
+2. Refuse `/health`-only evidence when the reported failure is a user path.
+   `/health` can prove the shell is alive; it cannot prove the connector
+   authorize route is usable.
+3. Name the full route identity in evidence: public host, backend/NEG or
+   equivalent routing object, region, revision, and revision env source.
+4. A lesson counts as learning only if it names the rung-3 control that would
+   have caught the incident: probe, lint, gate, readback, or verifier. If no
+   such control exists yet, the lesson is recall-only and must say so.
+5. Stop nesting the learning loop at this level. L1 is the class, L2 is the
+   diagnosing process, L3 is the control that catches it next time. Further
+   meta adds no state change unless it names a new mechanical edge.
+
+## Enforcement and Controls in Flight
+
+Kernel's leaf controls:
+
+- `data/failure-class-store/classes.json` contains CLASS-120.
+- `scripts/failure_class_store.py` and
+  `tests/test_failure_class_store_classifier.py` classify this shape.
+- `scripts/validate_learning_controls.py` reports lesson entries that do not
+  name an executable control and measurement environment.
+- `scripts/validate_lesson_propagation.py` reports promoted lessons that have
+  not reached a target intake corpus.
+
+Controls owned outside Kernel, named by the originating dispatch:
+
+- IAC wires `verify-cloud-run-deploy-readback.py --required-env` into every
+  deploy and adds a lint.
+- IAM makes `/health` fail loud when required config is missing, adds a
+  real-path authorize probe, and retires the shadow copy.
+- IAC adds `serving-receipt --host` and a shadow-copy detector.
+
+Until those external controls serve, Kernel's doctrine/store/classifier are not
+the full output-3. They make the class named and findable; IAC/IAM own the
+route-true runtime enforcement.
+
+## Relationship to Existing Classes
+
+- CLASS-030 covers reachable-in-code versus reachable-in-life. CLASS-120 is the
+  "is it fixed?" closure rule: replay the reporter route before answering.
+- CLASS-068 orders reachability checks before application-cause diagnosis.
+  CLASS-120 starts after that discipline and requires the proof to stay on the
+  reporter's route rather than collapse to `/health` or service name.
+- CLASS-100 covers post-deploy verifiers that read desired state instead of the
+  serving object. CLASS-120 applies the same observed-state demand to user-path
+  and connector proofs.
+- CLASS-000/MM3 already says lessons need output-3. CLASS-120 makes the rung-3
+  control explicit: a lesson without the probe/lint/gate/readback that would
+  have caught the incident is recall-only.
+
+## Number to Move
+
+Primary number: recall-only lessons converted to named controls. The minimum
+observable is the share reported by `scripts/validate_learning_controls.py`:
+controlled lesson entries and environment-attributed controls.
+
+Route number: deploy or fix proofs that use the reporter's public route plus
+serving revision readback instead of `/health`, service name, or stubbed env.
+Baseline from the incident: `verify-cloud-run-deploy-readback.py --required-env`
+was used by 2 of 32 deploys; target is every deploy whose proof claims a
+required-env or route fix.
+
+## END KERNEL DOCTRINE BLOCK — route-true-verification-and-lesson-controls

@@ -335,3 +335,13 @@ Today's filesystem transport is build-mode only. When Toreva crosses $10k MRR, w
 See: `coordinator/docs/bus-ops-phase-1b/` for the full cloud design, and the memory `project_local_daemon_pivot.md` for the 2026-04-21 decision.
 
 ## END CANONICAL BLOCK
+
+## BEGIN CLASS-135 WHOLE-PATH BLOCK — do not edit in-repo
+
+- **Whole-path-before-done rule (CLASS-135)** Before any step that changes ownership or is costly to undo, run one real, minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; every "OK / loaded / merged / signed in / deployed" is a claim until a downstream consumer has used it. Discover the environment's assumptions in one whole-path sweep up front, never one per failure; a warning that names a hard requirement is an abort. Before telling a human to take an action as a fix, show the probe output that discriminates the cause. Instance (po 2026-10-08, po#1887, on po's account): the Mac mini cutover advanced one surprise per round trip for five days while each layer reported success. Doctrine and session-start rule only: one instance, nothing in kernel enforces it; the coordinator probe primitive and Codex seat admission, and the iac provisioner canary and merge-path deleted-file refusal, are unbuilt hooks owned by those lanes. Sibling of CLASS-133 / CLASS-100 / CLASS-076 / CLASS-117 / CLASS-051. Canonical: `docs/doctrine/prove-the-whole-path-before-trusting-any-layers-done.md`.
+
+Quick application (session start):
+
+- On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
+
+## END CLASS-135 WHOLE-PATH BLOCK

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://toreva.com/schemas/receipt-test-vector-manifest.v0.1.json",
+  "status": "staged_design_only",
+  "profileVersion": "toreva-receipt/1.0",
+  "formatAuthority": "canonical Toreva Receipt Profile v0.1",
+  "payloadPolicy": {
+    "includeSyntheticReceiptPayloads": false,
+    "payloadsDeferredUntilRealProductionReceiptExists": true,
+    "reason": "The first public worked example and runnable payloads must not be fabricated."
+  },
+  "vectors": [
+    {
+      "id": "A",
+      "slug": "direct-user-owner-direct",
+      "title": "Direct user action",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "owner_direct",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/A-direct-user-owner-direct/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.ownerSubjectId equals authorityRef.initiatorSubjectId",
+        "authorityRef.ownerSubjectId equals authorityRef.actorSubjectId"
+      ]
+    },
+    {
+      "id": "B",
+      "slug": "agent-one-time-approval",
+      "title": "Agent proposal approved once",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "one_time_approval",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/B-agent-one-time-approval/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.approvalRef is present"
+      ]
+    },
+    {
+      "id": "C",
+      "slug": "agent-standing-rule",
+      "title": "Agent action under standing rule",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "delegated_rule",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/C-agent-standing-rule/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.ruleRef is present",
+        "authorityRef.executionConsentRequired is false"
+      ]
+    },
+    {
+      "id": "D",
+      "slug": "threshold-consent-obtained",
+      "title": "Approval threshold exceeded",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "delegated_rule",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/D-threshold-consent-obtained/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.ruleRef is present",
+        "authorityRef.executionConsentRequired is true",
+        "authorityRef.executionConsentObtained is true"
+      ]
+    },
+    {
+      "id": "E",
+      "slug": "prohibited-action-cancelled",
+      "title": "Prohibited action",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "delegated_rule",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/E-prohibited-action-cancelled/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.prohibitionRef is present",
+        "states.agentExecution is cancelled"
+      ]
+    },
+    {
+      "id": "F",
+      "slug": "failed-action-authority-preserved",
+      "title": "Failed action with original authority preserved",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "delegated_rule",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/F-failed-action-authority-preserved/receipt.json",
+      "fieldAssertions": [
+        "states.agentExecution is failed",
+        "states.financialSettlement is rejected",
+        "authorityRef.ruleRef is still present"
+      ]
+    },
+    {
+      "id": "G",
+      "slug": "refund-or-reversal-correction-link",
+      "title": "Refund or reversal",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "delegated_rule",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/G-refund-or-reversal-correction-link/receipt.json",
+      "fieldAssertions": [
+        "correctionLink.kind is refunds or reverses",
+        "correctionLink.priorReceiptId is present"
+      ]
+    },
+    {
+      "id": "H",
+      "slug": "non-financial-system-duty",
+      "title": "Non-financial agent action",
+      "authorityApplicability": "applicable",
+      "authorityBasis": "system_duty",
+      "expectedConformance": "valid",
+      "releaseFixturePath": "test-vectors/v0.1/H-non-financial-system-duty/receipt.json",
+      "fieldAssertions": [
+        "authorityRef.systemDutyDescription is present",
+        "states.financialSettlement is absent"
+      ]
+    }
+  ]
+}

@@ -201,6 +201,17 @@ It is not "ship now, scale later." Redesign it to be planetary-correct, or — i
 
 ## END PLANETARY-SCALE INVARIANT
 
+
+## BEGIN CLASS-135 WHOLE-PATH BLOCK — do not edit in-repo
+
+- **Whole-path-before-done rule (CLASS-135)** Before any step that changes ownership or is costly to undo, run one real, minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; every "OK / loaded / merged / signed in / deployed" is a claim until a downstream consumer has used it. Discover the environment's assumptions in one whole-path sweep up front, never one per failure; a warning that names a hard requirement is an abort. Before telling a human to take an action as a fix, show the probe output that discriminates the cause. Instance (po 2026-10-08, po#1887, on po's account): the Mac mini cutover advanced one surprise per round trip for five days while each layer reported success. Doctrine and session-start rule only: one instance, nothing in kernel enforces it; the coordinator probe primitive and Codex seat admission, and the iac provisioner canary and merge-path deleted-file refusal, are unbuilt hooks owned by those lanes. Sibling of CLASS-133 / CLASS-100 / CLASS-076 / CLASS-117 / CLASS-051. Canonical: `docs/doctrine/prove-the-whole-path-before-trusting-any-layers-done.md`.
+
+Quick application (session start):
+
+- On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
+
+## END CLASS-135 WHOLE-PATH BLOCK
+
 ## BEGIN CANONICAL BLOCK — do not edit in-repo
 
 ## Dispatch OODA loop — daemon-managed (build mode)
@@ -213,9 +224,11 @@ You (this agent) are running inside a repo that has a **local filesystem daemon*
 
 For **every** dispatch on **every** transport (filesystem today, GitHub Actions relay and pubsub bus later):
 
-1. **60-second ack.** Within 60s of the dispatch file landing, the agent's daemon MUST commit `intake/responses/<basename>.ack.md` stating it picked up the work. Today `scripts/agent-daemon.sh` does this automatically before invoking the runner — you don't have to do anything extra in normal flow.
-2. **5-minute resolution-or-status.** Within 5min of pickup, EITHER the full response file MUST be committed OR a `intake/responses/<basename>.status.md` MUST exist saying `status: in_progress` with `updated_at` < 5min ago. The daemon's background status emitter rewrites the status file every 300s; if you take a complex action that runs longer than 5min, the status keeps refreshing automatically as long as the daemon is alive.
+1. **60-second ack.** Within 60s of the dispatch file landing, the agent's daemon MUST persist `intake/responses/<basename>.ack.md` locally stating it picked up the work. This is a transport file, **not a Git commit**. Today `scripts/agent-daemon.sh` does this automatically before invoking the runner — you don't have to do anything extra in normal flow.
+2. **5-minute resolution-or-status.** Within 5min of pickup, EITHER the full response file MUST exist locally OR a `intake/responses/<basename>.status.md` MUST exist saying `status: in_progress` with `updated_at` < 5min ago. These are transport files, **not source-tree commits**. The daemon's background status emitter rewrites the status file every 300s; if you take a complex action that runs longer than 5min, the status keeps refreshing automatically as long as the daemon is alive.
 3. **5-minute re-status.** If the work is still in flight at the 5-min mark, the status file MUST be refreshed every 300s thereafter. Silence past a 300s interval is a hard breach.
+
+**Transport/source boundary:** ack, response, status, pending and processed dispatch files satisfy the SLA on disk/archive only. Do **not** `git add`, force-add, commit, or use them as mutable product truth. Semantic work belongs in normal source files; transport evidence is archived by the daemon.
 
 Any breach is a P0 incident — `scripts/sla-watchdog.sh` runs every 60s, reports breaches to `reports/dispatch/sla-breaches-<DATE>.md`, and restarts the responsible daemon. Full contract: `coordinator/data/sla.yaml`.
 
@@ -225,7 +238,7 @@ If you're acting as the runner inside a long-running dispatch and you realize th
 
 - **Transport is model-agnostic.** `scripts/dispatch.sh` writes Markdown dispatches into `intake/pending-dispatches/`; responses still land in `intake/responses/<basename>`; processed dispatches still move to `intake/processed/<YYYY-MM-DD>/<basename>`.
 - **Execution is runner-specific.** `scripts/agent-daemon.sh` owns the watcher and dispatch protocol. It selects execution with `AGENT_RUNNER`, defaulting to `claude`. `scripts/claude-daemon.sh` remains a compatibility wrapper for existing launchd/supervisor paths.
-- **Local Codex is a repo-local runner.** `AGENT_RUNNER=codex` runs `codex exec --cd <repo>` with `AGENT_CODEX_SANDBOX` defaulting to `workspace-write`, then writes Codex's final message into `intake/responses/<basename>`. Optional `AGENT_CODEX_MODEL` and `AGENT_CODEX_PROFILE` pass through to `codex exec`. It uses the local Codex CLI auth/config, not the GitHub issue connector.
+- **Local Codex is a repo-local runner.** `AGENT_RUNNER=codex` runs `codex exec --cd <repo>` with `AGENT_CODEX_SANDBOX` defaulting to `danger-full-access`, then writes Codex's final message into `intake/responses/<basename>`. Optional `AGENT_CODEX_MODEL`, `AGENT_CODEX_MODEL_P0`, and `AGENT_CODEX_PROFILE` pass through to `codex exec`; P0 dispatches can use the stronger model override while routine work stays on the cheaper default. The daemon also injects the narrow GitHub / Cloud Run network allowlist needed for commit-to-deploy and GCP deploys. It uses the local Codex CLI auth/config, not the GitHub issue connector.
 - **Manual/noop mode is explicit deferral.** `AGENT_RUNNER=manual` or `AGENT_RUNNER=noop` writes a clear `Status: deferred` response instead of invoking a model. Use this when Claude quota is exhausted or no local model runner is available.
 - **Codex Cloud is separate.** `scripts/codex-dispatch.sh` opens a GitHub issue with an `@codex` mention so the GitHub Codex Connector can work in Codex Cloud. It is not the repo-local daemon path, is separate from `AGENT_RUNNER=codex`, and does not consume `intake/pending-dispatches/`.
 - **Artifact lifecycle is separated from memory.** Raw dispatch files, response files, ack/status files, and runner transcripts are transport exhaust. The daemon archives raw copies under `$AGENT_DAEMON_ARCHIVE_ROOT` (default `~/.toreva/agent-daemon/archive`) and these paths are git-ignored. Distilled lessons and decisions belong in repo-local `MEMORY.md`; cross-repo candidates are promoted by the memory agent for kernel consumption.
@@ -289,7 +302,8 @@ If you touched tracked files in this repo as part of the dispatch:
 
 1. **Run tests + typecheck** appropriate to the repo (e.g. `npm test`, `pnpm typecheck`, `pytest`). Do NOT mark `Status: completed` if they fail — escalate or defer.
 2. **Create a branch** named `daemon/<agent>/<short-dispatch-slug>-<YYYY-MM-DD>` (or rebase your work onto one if you've been working on main).
-3. **Commit** with a descriptive message. End the commit message with a trailer:
+3. **Commit** with a descriptive message. End the commit message with trailers:
+   - `Source dispatch: <dispatch basename>` on EVERY commit — the landing hook refuses to open, arm or merge a PR whose ahead commits do not name the dispatch (`BLOCKED_UNPROVEN_WORK_IDENTITY`); branch names and principals are not accepted as identity. Exactly one such line per commit.
    - `Spawned-By: <plan-agent-id>` if acting on a planning-agent tick, OR
    - `Dispatched-By: <from-agent>` otherwise
    - Plus the standard `Co-Authored-By:` if applicable.
@@ -324,6 +338,32 @@ The script writes a canonical-headered `.md` file into the TARGET repo's `intake
 - **Do not roleplay another agent.** If a dispatch is mis-routed, respond with that fact — do not invent the other agent's answer.
 - **Do not silently fail.** If the runner session can't complete the ask, write a `Status: declined` or `Status: deferred` response explaining why.
 - **Trailer your commits** when the work you do creates a git commit. Use `Spawned-By: <plan-agent-id>` if you're acting on a planning-agent dispatch, else `Dispatched-By: <from-agent>`.
+- **Never mutate another agent's live checkout.** You may inspect it read-only — `git log`, `git show`, `git diff`, `git status`, reading files. You may **not** `stash`, `reset`, `checkout`, `switch`, `clean`, `commit`, `rebase`, `merge`, or resolve conflicts in it. A live checkout has a concurrent writer: its daemon may be mid-dispatch, and no amount of care makes a shared mutable worktree safe. For cross-agent repair, use `git worktree add` at a separate path, or dispatch the owning agent. If a repair is urgent and the owner is unresponsive, escalate — do not reach in. (Class A ruling 2026-08-07, after a `git stash` in a running agent's checkout left conflict markers on disk and its in-flight work conflicted. Full doctrine: `coordinator/docs/doctrine/CROSS-AGENT-CHECKOUT-READONLY-001.md`.)
+- **A state word is not evidence.** "Recovered", "clean", "deployed", "preserved", "green" and "cleared" each need a retrievable artifact behind them, produced by whoever owns the thing described. If you repaired a damaged checkout, attest it: branch, `git rev-parse HEAD`, full unedited `git status --porcelain`, a conflict-marker scan and its output, and preservation proof for every in-flight file — never the word "clean" on its own. Another agent's read-only inspection may cross-check you, but the owner's attestation is the record.
+- **Use sanctioned mechanisms only.** If no approved mechanism exists for what you need — a hotfix path, a scoped release, a migration route — **that absence is the defect to report**, not a gap to improvise around in the shell. Hand-building a one-off path creates a parallel mechanism precisely when the control plane is telling you the sanctioned one is not safe.
+
+### Fleet learning — mandatory at every session end
+
+**Founder mandate 2026-08-25.** Every agent — current and future — inherits the fleet's accumulated failure modes and is mechanically required to propagate its own learnings, so lessons compound across the fleet instead of being re-learned N times.
+
+**Failure-mode doctrine:** `coordinator/docs/doctrine/agent-failure-modes-and-metacognition-001.md`
+Read it at session start. It distils 233 incidents into 6 failure modes, 3 meta-invariants, and 5 meta-meta rules. No agent should buy a lesson the fleet has already paid for.
+
+**At every session end you MUST:**
+
+1. **Write qualifying learnings to this repo's `MEMORY.md`** using the YAML entry template. Qualifying = future-relevant, non-obvious, actionable.
+2. **Tag every entry with a promote decision.** No entry leaves the session without one:
+   - `promote: candidate` — cross-repo relevant; memory agent will propagate to Layer 3
+   - `promote: local` — this repo only
+   - No tag = incomplete. The daemon validator enforces this: a response that wrote or changed a reflective memory without a promote tag is flagged as `missing_promote_tag` and rejected.
+3. **For REFLECTIVE lessons** — about how reasoning fails, not domain facts — also dispatch to kernel:
+   ```bash
+   coordinator/scripts/dispatch.sh --from <this-agent> --to kernel \
+     --priority P1 --title "fleet lesson: <slug>" --body-file -
+   ```
+   Reasoning failures are structural, not personal. Every agent in the fleet shares them. A reflective lesson that stays local is a defect in the learning system itself.
+
+**Why this is enforced, not documented:** The instruction to mark `promote: candidate` has been in CLAUDE.md since 2026-04-13. It was followed 0 times in 233 lessons — because documentation alone has no feedback edge. Compliance correlates with enforcement. This section is enforced at the daemon validation gate, not just read at session start.
 
 ### Planned migration (revenue-gated)
 
@@ -335,13 +375,3 @@ Today's filesystem transport is build-mode only. When Toreva crosses $10k MRR, w
 See: `coordinator/docs/bus-ops-phase-1b/` for the full cloud design, and the memory `project_local_daemon_pivot.md` for the 2026-04-21 decision.
 
 ## END CANONICAL BLOCK
-
-## BEGIN CLASS-135 WHOLE-PATH BLOCK — do not edit in-repo
-
-- **Whole-path-before-done rule (CLASS-135)** Before any step that changes ownership or is costly to undo, run one real, minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; every "OK / loaded / merged / signed in / deployed" is a claim until a downstream consumer has used it. Discover the environment's assumptions in one whole-path sweep up front, never one per failure; a warning that names a hard requirement is an abort. Before telling a human to take an action as a fix, show the probe output that discriminates the cause. Instance (po 2026-10-08, po#1887, on po's account): the Mac mini cutover advanced one surprise per round trip for five days while each layer reported success. Doctrine and session-start rule only: one instance, nothing in kernel enforces it; the coordinator probe primitive and Codex seat admission, and the iac provisioner canary and merge-path deleted-file refusal, are unbuilt hooks owned by those lanes. Sibling of CLASS-133 / CLASS-100 / CLASS-076 / CLASS-117 / CLASS-051. Canonical: `docs/doctrine/prove-the-whole-path-before-trusting-any-layers-done.md`.
-
-Quick application (session start):
-
-- On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
-
-## END CLASS-135 WHOLE-PATH BLOCK

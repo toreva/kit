@@ -230,3 +230,14 @@ Quick application (session start):
 - On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
 
 ## END CLASS-135 WHOLE-PATH BLOCK
+
+## BEGIN CANONICAL BLOCK — HARNESS GATE LEDGER — do not edit in-repo
+
+## Harness engineering — gate ledger (matter of course)
+Work that is person-triggered, irreversible, multi-step (>3) or customer-visible carries a gate ledger:
+atomic yes/no gates, each with the code that measures it, the answer now, a receipt, and a grader that is
+not the executing agent. Done is the ledger all-yes by code, never the agent's statement. Cheap, reversible
+gates first. Unknown or detector failure is not-yes. Hook: harness-gate-ledger-check. Framework record:
+framework-intelligence registry `harness-engineering`.
+
+## END CANONICAL BLOCK — HARNESS GATE LEDGER

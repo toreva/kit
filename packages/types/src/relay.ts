@@ -2,6 +2,7 @@ export interface RelayRequest<TPayload = unknown> {
   type: string;
   toolName: string;
   requestId?: string;
+  subject?: string;
   payload: TPayload;
 }
 

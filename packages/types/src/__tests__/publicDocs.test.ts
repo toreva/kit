@@ -16,7 +16,8 @@ describe('public MCP metadata', () => {
     const mcpPackage = JSON.parse(readRootFile('packages/mcp/package.json'));
     const typesPackage = JSON.parse(readRootFile('packages/types/package.json'));
 
-    expect(server.description).toBe(CANONICAL_TAGLINE);
+    // MCP Registry rejects descriptions longer than 100 chars (422), so server.json carries a short form.
+    expect(server.description.length).toBeLessThanOrEqual(100);
     expect(mcpPackage.description).toBe(CANONICAL_TAGLINE);
     expect(typesPackage.description).toBe(CANONICAL_TAGLINE);
   });

@@ -345,3 +345,16 @@ Quick application (session start):
 - On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
 
 ## END CLASS-135 WHOLE-PATH BLOCK
+
+## BEGIN REGULATORY PERIMETER — do not edit in-repo
+
+Founder ruling 2026-10-18. Record: innovation `docs/decisions/DEC-STRAT-001-regulatory-perimeter-planned-four-unplanned-six.md`. Machine-readable: innovation `data/regulatory-perimeter.v1.json`.
+
+- **The Planned Four.** Toreva holds four regulated roles: VASP / digital currency exchange, payments / remitter, fund manager, financial advisor. Architect anything in them as a global class localised by jurisdiction. Never hard-code a country, rail or regulator into the core.
+- **The Unplanned Six.** Toreva never becomes a bank, non-bank lender, insurer, reinsurer, commodities or bullion trader, or exchange. It may orchestrate protocols that do those things, within the permission levels. A proposal that would make Toreva one of them is blocked; reopening is Class A via EA.
+- **The human is the only customer** (KYC'd principal). Agents are bounded, revocable delegates (caps, approved recipients, expiry), never customers.
+- **Permission levels.** L1 autonomous within caps; L2 one-tap human approval; L3 human-only (withdrawal to unverified wallets, key or signer changes, speculation); L4 AML/CTF triggers.
+- **Day 1 is frozen on pair.** No crypto, AUSTRAC or wallet copy anywhere in H1. No foreign licence filings until revenue forces them.
+- Regulatory specifics are unverified until legal and compliance confirm them. This is not legal advice.
+
+## END REGULATORY PERIMETER

@@ -73,7 +73,7 @@ function ctaButton(label: string, href: string): string {
  * Render a Tier-1 receipt Box for the ChatGPT surface.
  *
  * Tier-1 (Glance): canonical mark · ONE hero fact · badge/finding ·
- * NOTHING MOVED · clear CTA · exact app.toreva.com link.
+ * NOTHING MOVED · read-only receipts; actionable states retain their CTA.
  *
  * Returns an HTML string with inline styles; safe for MCP content type: 'text'.
  * Returns empty string if payload.surface !== 'chatgpt'.
@@ -115,9 +115,11 @@ export function renderTier1Box(payload: TorevaIntentBoxRenderPayloadV1): string 
 
   const heroText   = esc(payload.primary_text);
   const secondary  = payload.secondary_text ? `<p style="margin:0;color:${labelColor};font-size:13px;line-height:1.35">${esc(payload.secondary_text)}</p>` : '';
-  const footer     = payload.nothing_has_moved
-    ? `${nothingMovedChip(isReceipt || isReady)}&nbsp;&nbsp;${ctaButton(payload.cta.label, ctaHref)}`
-    : ctaButton(payload.cta.label, ctaHref);
+  // Receipts are read-only, including legacy payloads that still supply a CTA.
+  const action = isReceipt ? '' : ctaButton(payload.cta.label, ctaHref);
+  const footer = payload.nothing_has_moved
+    ? `${nothingMovedChip(isReceipt || isReady)}${action ? `&nbsp;&nbsp;${action}` : ''}`
+    : action;
 
   return `<article role="article" aria-label="Toreva — ${badge}" style="max-width:420px;box-sizing:border-box;border:${shellBorder};border-radius:24px;background:${shellBg};color:${T.ink};font-family:'DM Sans',system-ui,sans-serif;overflow:hidden">
   <header style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:16px;background:${headerBg};border-bottom:1px solid ${headerBorder}">

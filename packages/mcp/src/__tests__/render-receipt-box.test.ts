@@ -53,11 +53,10 @@ describe('renderTier1Box — ChatGPT receipt surface', () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-live="polite"');
 
-    // Clear CTA with exact app.toreva.com link
-    expect(html).toContain('View receipt');
-    expect(html).toContain('https://app.toreva.com/intent/activity');
-    expect(html).toContain('target="_blank"');
-    expect(html).toContain('rel="noopener noreferrer"');
+    // Receipt history has no entry points, even for legacy CTA payloads.
+    expect(html).not.toMatch(/<(?:a|button|input|select|textarea)\b/i);
+    expect(html).not.toContain('View receipt');
+    expect(html).not.toContain('https://app.toreva.com/intent/activity');
 
     // No barcode, no merchant treatment, no Amount/Fee/Flow
     expect(html).not.toContain('barcode');
@@ -70,13 +69,14 @@ describe('renderTier1Box — ChatGPT receipt surface', () => {
     expect(renderTier1Box(claudePayload)).toBe('');
   });
 
-  it('falls back to canonical app.toreva.com routes when cta.href is absent', () => {
-    const noHref: TorevaIntentBoxRenderPayloadV1 = {
+  it.each([true, undefined] as const)('keeps receipts read-only without a CTA URL (movement tag: %s)', (movement) => {
+    const html = renderTier1Box({
       ...exampleReceipt,
       cta: { label: 'View receipt' },
-    };
-    const html = renderTier1Box(noHref);
-    expect(html).toContain('https://app.toreva.com/intent/activity');
+      nothing_has_moved: movement,
+    });
+    expect(html).not.toMatch(/<(?:a|button|input|select|textarea)\b/i);
+    expect(html).not.toContain('https://app.toreva.com');
   });
 
   it('renders READY FOR REVIEW box with teal header, not teal shell', () => {

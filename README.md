@@ -8,8 +8,15 @@
 
 # toreva kit
 
-Kit is the public client layer for connecting user-owned compute to Toreva
-governed objects.
+Connector primitives for Toreva governed objects. Bring your own compute, use the gateway relay, and require receipts for every outcome.
+
+Kit provides SDK, CLI, and MCP connectors for developers connecting their own
+compute to Toreva governed objects. The setup paths below are developer
+integrations.
+
+The Day-1 Mac helper scope is Pair and Unpair only, for every user. It must
+request no Screen Recording or Accessibility permissions and take no jobs. Developer
+connector setup is separate from helper pairing.
 
 The front door is the object store. MCP clients, SDK callers, CLI users, and
 customer-owned agent fleets all read and write the same Toreva objects through
@@ -26,7 +33,7 @@ No money moves through this connector.
 
 ### Door 1: MCP
 
-Use this first. Your AI client connects the Toreva MCP server, your own client
+For developer integrations, start here. Your AI client connects the Toreva MCP server, your own client
 subscription does the work, and Toreva receives only the object reads and writes
 you authorize.
 

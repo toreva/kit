@@ -97,6 +97,7 @@ Quick application (session start):
 
 ## END CLASS-135 WHOLE-PATH BLOCK
 
+
 ## BEGIN CANONICAL BLOCK — do not edit in-repo
 
 ## Dispatch OODA loop — daemon-managed (build mode)
@@ -153,7 +154,7 @@ Before writing, replacing, formatting, flattening, exporting, or regenerating an
 2. **Escalate.** If the ask exceeds your scope or needs approval, dispatch to your accountable agent via `coordinator/scripts/dispatch.sh --to <accountable> --title "escalation: ..." --body-file -`.
 3. **Defer with reason.** Write a response explaining what's blocking and expected unblock time.
 
-**Act.** Execute. If the action involved code changes, you MUST complete the full commit-to-deploy chain BEFORE writing the response (see "Commit-to-deploy SOP" below — founder mandate 2026-04-24, re-affirmed 2026-05-16 after the identity dispatch left uncommitted work in the worktree).
+**Act.** Execute. If the action involved code changes, you MUST make the first compiling/testable checkpoint durable before continuing deeper work, then complete the full commit-to-deploy chain BEFORE writing the final response (see "Commit-to-deploy SOP" below — founder mandate 2026-04-24, re-affirmed 2026-05-16 after the identity dispatch left uncommitted work in the worktree; amended 2026-06-15 after timeout-killed runners lost long-running work).
 
 Write the response file to `intake/responses/<basename>` with:
 
@@ -175,30 +176,49 @@ Write the response file to `intake/responses/<basename>` with:
 
 ## Evidence
 <file paths with line numbers, PR URLs, tx signatures, BQ query IDs — proof, not assertion>
+
+## Completion proof
+- Task scope: leaf
+- Capability scope: non_runtime
+- Runtime entrypoint: not_applicable_non_runtime
+- Composed specimen: not_applicable_non_runtime
+- Arrival assertion: <checkable fact false if the deliverable never arrived>
 ```
 
-**Move the original.** Once you've written the response, the daemon will move `intake/pending-dispatches/<basename>` → `intake/processed/<YYYY-MM-DD>/<basename>` automatically. You do not need to do that yourself.
+For a `completed` response, `## Completion proof` is required. The executable
+source for these field names and default non-runtime leaf values is
+`scripts/validate-dispatch-response.sh --print-completion-proof-scaffold`; the
+daemon renders that scaffold directly into every runner prompt. If you are
+writing a response outside the daemon, run that command and use its output
+rather than inventing or renaming fields. The `Arrival assertion` value must
+name a checkable fact about the receiving system that would be false if the
+work never arrived; "I produced X" is not enough. `completed_unverified` is
+reserved for the daemon when a zero-exit completed candidate fails validation;
+agents do not claim it directly.
+
+**Move the original.** Once you've written a terminal response, the daemon will move `intake/pending-dispatches/<basename>` → `intake/processed/<YYYY-MM-DD>/<basename>` automatically. Clearing statuses (`deferred`, `deferred_budget`, `fuel_reserved`, `runners_exhausted`, `moratorium`, `held`, and `runner_unavailable`) remain pending and retry according to their retry clock. You do not move the original yourself.
 
 ### Commit-to-deploy SOP — REQUIRED before declaring Status: completed
 
-Founder mandate 2026-04-24, re-affirmed 2026-05-16: **review / commit / merge / deploy must NEVER require manual triggering after the daemon runs.** Writing files and exiting is incomplete work. The runner session is responsible for the full chain.
+Founder mandate 2026-04-24, re-affirmed 2026-05-16 and amended 2026-06-15: **review / commit / merge / deploy must NEVER require manual triggering after the daemon runs, and long-running work must never remain only in an uncommitted checkout.** Writing files and exiting is incomplete work. The runner session is responsible for the full chain.
 
 If you touched tracked files in this repo as part of the dispatch:
 
-1. **Run tests + typecheck** appropriate to the repo (e.g. `npm test`, `pnpm typecheck`, `pytest`). Do NOT mark `Status: completed` if they fail — escalate or defer.
-2. **Create a branch** named `daemon/<agent>/<short-dispatch-slug>-<YYYY-MM-DD>` (or rebase your work onto one if you've been working on main).
-3. **Commit** with a descriptive message. End the commit message with trailers:
+1. **Create or reuse a branch early** named `daemon/<agent>/<short-dispatch-slug>-<YYYY-MM-DD>` (or rebase your work onto one if you've been working on main).
+2. **After the first compiling or otherwise testable checkpoint, commit + push immediately and open a draft PR.** Keep iterating on that same branch. Do not wait until the whole fix is finished before pushing the first usable checkpoint.
+3. **Run tests + typecheck** appropriate to the repo (e.g. `npm test`, `pnpm typecheck`, `pytest`). Do NOT mark `Status: completed` if they fail — keep the PR draft and use `Status: blocked`, `Status: escalated`, or `Status: deferred` with evidence.
+4. **Commit final changes** with a descriptive message. End the commit message with trailers:
    - `Source dispatch: <dispatch basename>` on EVERY commit — the landing hook refuses to open, arm or merge a PR whose ahead commits do not name the dispatch (`BLOCKED_UNPROVEN_WORK_IDENTITY`); branch names and principals are not accepted as identity. Exactly one such line per commit.
    - `Spawned-By: <plan-agent-id>` if acting on a planning-agent tick, OR
    - `Dispatched-By: <from-agent>` otherwise
    - Plus the standard `Co-Authored-By:` if applicable.
-4. **Push** the branch to `origin`.
-5. **Open a PR** via `gh pr create` with a body referencing the dispatch path.
-6. **Enable auto-merge** via `gh pr merge --squash --auto` so CI can land the change without further human action. If `--auto` fails with `enablePullRequestAutoMerge` / "Protected branch rules not configured for this branch", the target branch has no branch-protection rules, so GitHub cannot arm auto-merge regardless of the repo-level `allow_auto_merge` setting. Fall back as follows: if the PR has checks (`gh pr checks <pr>` lists any), wait for them with `gh pr checks <pr> --watch` and then merge directly via `gh pr merge --squash`; if no checks are configured, merge directly via `gh pr merge --squash` immediately. Do NOT add branch-protection rules inline to make `--auto` work — that is a deliberate per-repo governance change (a required status check on a repo with no CI deadlocks every future PR), so dispatch coordinator instead if you think a repo needs protection rules.
-7. **Verify CI is green** (or at least running with no immediate failures) before declaring completed.
-8. In the response's `## Evidence` section, include: branch name, PR URL, commit SHA, and CI status link.
+5. **Push** the branch to `origin`.
+6. **Open or update the PR** via `gh pr create` / `gh pr view`; if it is still draft when final verification is done, mark it ready.
+7. **Enable auto-merge** via `gh pr merge --squash --auto` so CI can land the change without further human action. If `--auto` fails with `enablePullRequestAutoMerge` / "Protected branch rules not configured for this branch", the target branch has no branch-protection rules, so GitHub cannot arm auto-merge regardless of the repo-level `allow_auto_merge` setting. Fall back as follows: if the PR has checks (`gh pr checks <pr>` lists any), wait for them with `gh pr checks <pr> --watch` and then merge directly via `gh pr merge --squash`; if no checks are configured, merge directly via `gh pr merge --squash` immediately. Do NOT add branch-protection rules inline to make `--auto` work — that is a deliberate per-repo governance change (a required status check on a repo with no CI deadlocks every future PR), so dispatch coordinator instead if you think a repo needs protection rules.
+8. **Verify CI is green** (or at least running with no immediate failures) before declaring completed.
+9. In the response's `## Evidence` section, include: branch name, PR URL, commit SHA, and CI status link.
 
-If you wrote code but couldn't commit (lint errors you can't fix, missing credentials, repo policy block), use `Status: deferred` and explain in `## Blockers / follow-ups` what's needed.
+If you wrote code but couldn't commit or push a draft checkpoint (lint errors you can't fix, missing credentials, repo policy block), use `Status: deferred` or `Status: escalated` and explain in `## Blockers / follow-ups` what's needed.
 
 **Why this matters:** the daemon system is supposed to be commit-to-deploy end-to-end. Leaving files in the worktree means PO or a human has to manually commit, which breaks the agent-autonomy contract.
 

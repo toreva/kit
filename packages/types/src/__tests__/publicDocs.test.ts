@@ -22,6 +22,16 @@ describe('public MCP metadata', () => {
     expect(typesPackage.description).toBe(CANONICAL_TAGLINE);
   });
 
+  it('keeps the hosted goals connector Registry metadata within its contract and current vocabulary', () => {
+    const goals = JSON.parse(readRootFile('server-goals.json'));
+
+    // MCP Registry rejects descriptions longer than 100 chars (422).
+    expect(goals.description.length).toBeLessThanOrEqual(100);
+    // Plans was renamed to Goals on 2026-08-18; "plan" is retired as a user-facing label.
+    expect(`${goals.title} ${goals.description}`).not.toMatch(/\bplans?\b/i);
+    expect(JSON.stringify(goals)).not.toMatch(/solana|wallet|perps|perpetual|strateg/i);
+  });
+
   it('does not advertise excluded venues or product families in MCP metadata', () => {
     const publicText = [
       readRootFile('README.md'),

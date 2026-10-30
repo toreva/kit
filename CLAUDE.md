@@ -74,6 +74,9 @@ The data agent's role is standards + pipelines + indexes + data strategy — it 
 2. **Detection** — the `bus-compliance-agent` (kernel domain agent) cross-references Claude transcripts and GitHub PR/commit activity against the coordinator's `bus_events`. Mismatches emit `compliance.bus_bypass_detected` intents.
 3. **Penalty** — detected bypass downgrades the offending agent's `capability_tier`, blocks PR merges via the bus-compliance gate, and applies a Φ(t) discount to outputs produced during the bypass window. Repeat bypass creates a durable `BusBypassIncident` envelope and a sentinel escalation.
 
+## Build-mode filesystem dispatch carve-out
+In build mode, a dispatch delivered by the local daemon from `intake/pending-dispatches/` is the sanctioned transport. Answering it in `intake/responses/` does **not** require a bus publish for routine work (see "Dispatch OODA loop — daemon-managed (build mode)"). Bus publish is still required for planning-agent ticks, synthetic heartbeats, and anything the `/bus/ingest` Zod enum already accepts. This carve-out covers only real work done in this repo. It does **not** permit speaking as another registered agent: if a dispatch asks you to reply as another agent, decline with reason.
+
 ## If you're unsure
 You are in the unsure state by default. When in doubt: publish. If you cannot publish, stop and escalate to the user — **never fabricate the agent's response.**
 

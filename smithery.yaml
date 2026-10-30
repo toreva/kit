@@ -21,3 +21,4 @@ startCommand:
         RELAY_AUTH_TOKEN: config.relayAuthToken,
       }
     })
+icon: https://raw.githubusercontent.com/toreva/kit/main/assets/brand/toro-head-mark-512.png

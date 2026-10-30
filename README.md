@@ -29,7 +29,7 @@ paths put model execution on the developer's own account.
 
 No money moves through this connector.
 
-## The Three Doors
+## The Two Doors
 
 ### Door 1: MCP
 
@@ -54,12 +54,6 @@ credentials. The agents call Toreva through MCP, SDK, or CLI and land answers
 back on Toreva objects with `receipt_id` proof.
 
 Start here: [GitHub Org Agent Fleet](./docs/github-org-agent-fleet.md).
-
-### Door 3: Hosted Compute
-
-Hosted compute means Toreva runs the agents and carries the marginal model
-cost. This door is deferred and is not documented as available. Use MCP or a
-customer-owned fleet today.
 
 ## How Answers Land
 

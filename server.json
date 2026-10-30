@@ -16,5 +16,14 @@
         "type": "stdio"
       }
     }
+  ],
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/toreva/kit/main/assets/brand/toro-head-mark-512.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    }
   ]
 }

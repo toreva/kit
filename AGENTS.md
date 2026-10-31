@@ -230,3 +230,21 @@ Quick application (session start):
 - On any ownership change, cutover, host/lane/seat move or step costly to undo, and on any "OK / loaded / merged / signed in / deployed" you are about to rely on: run one real minimal job through the exact path the real work will use, on the target, from a fresh subject, and read the consumer's receipt; sweep the environment's assumptions once up front; treat a warning that names a hard requirement as an abort; and before instructing a human to take an action as a fix, show the probe output that discriminates the cause. CLASS-135.
 
 ## END CLASS-135 WHOLE-PATH BLOCK
+
+*Gate refusal evidence before defect counting (DEC-2026-317, 2026-10-25):*
+`FC-gate-stale-expectation` retains MODE-004; MODE-001 explains measuring a
+status label as a defect. A gate refusal is an observation. Inspect the current
+reason, gate/contract revision, applicable input and invocation state before
+labelling stale expectation or execution defect. Missing or contradictory
+evidence remains unknown and visible. `NO_VALUE_OUTCOME` before a model runs
+does not establish an agent execution defect; route the missing value contract
+to the issuer. Never weaken the gate merely to clear a label. Preserve raw
+observations and count only evidence-confirmed defects separately; a lower
+label count is not improved reliability. CLASS-171 supplies the hold rule,
+CLASS-051 the counting boundary, and CLASS-132 the narrow-reason rule. Keep
+`kernel_class_id` null without a demonstrated mechanism; no new class is needed.
+Resilience retains class accountability, corporate owns the existing extractor
+discriminator, coordinator owns admission, and Audit verifies live adoption.
+This is recall guidance, not an installed control. Source records, bounded
+admission replay and receiving artifacts:
+`docs/evidence/2026-10-25-gate-refusal-evidence-mapping.md`.

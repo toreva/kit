@@ -30,7 +30,6 @@ scope chooses one of these doors:
 | --- | --- | --- | --- |
 | `mcp` | The person's own AI client or local MCP host | Live | Install the MCP connector, authenticate, call tools, and return receipts |
 | `fleet` | The organization's own runners or daemon agents | Live pattern | Provide MCP, SDK, CLI, relay, and receipt shapes for customer-owned agents |
-| `hosted` | Toreva-hosted agents | Deferred | Not documented as available |
 
 The `mcp` and `fleet` paths do not require Toreva to hold a per-user AI API key.
 For a GitHub organization fleet, see

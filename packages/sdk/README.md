@@ -59,11 +59,10 @@ console.log(response.result);
 - Product-family mechanics live in docs custody until a separate publication
   pass approves them for kit.
 
-## Three Doors
+## Two Doors
 
 - MCP: a person's own AI client connects the Toreva MCP server.
 - Customer-owned fleet: an organization runs its own agents and runners.
-- Hosted compute: deferred until available.
 
 See the root README for the public onboarding path.
 

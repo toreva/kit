@@ -13,8 +13,7 @@ In scope:
 - @toreva/mcp — MCP server for AI agent integration (stdio and remote modes)
 - @toreva/types — Shared schemas and type definitions
 - Work-surface connector primitives for MCP, SDK, CLI, and relay consumers
-- Documentation for the three compute doors: MCP, customer-owned fleet, and
-  hosted compute marked deferred until available
+- Documentation for the two compute doors: MCP and customer-owned fleet
 - GitHub organization fleet setup guidance for customer-owned agents
 - Examples for developer onboarding and connector verification
 
@@ -43,7 +42,7 @@ Out of scope:
 - Make MCP the shortest live setup path for a person's own AI client
 - Document how GitHub organization admins run customer-owned agents against
   their own orgs and return receipt-bearing object writes to Toreva
-- Keep hosted compute described as deferred until it is actually available
+- Document only the compute doors that are live
 - Maintain canonical tool names and relay types across all packages
 - Keep all external communication routed through gateway.toreva.com only
 - Include proper regulatory notices and disclaimers in public-facing packages
@@ -82,7 +81,6 @@ Out of scope:
 - Zero internal facts/docs or coordination artifacts in committed content
 - Tool names and relay types are canonical (match gateway contract)
 - MCP server works in both stdio and remote modes
-- README presents MCP, customer-owned fleet, and deferred hosted compute in that
-  order
+- README presents MCP, then customer-owned fleet, in that order
 - A GitHub organization admin can follow Kit docs to connect an organization
   runner to Toreva objects without Toreva-held model credentials

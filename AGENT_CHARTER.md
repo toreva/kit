@@ -15,7 +15,7 @@ The Kit agent **does**:
 - Document MCP as the shortest live compute-binding path
 - Document customer-owned GitHub organization fleets and their object-store
   writeback flow
-- Keep hosted compute marked deferred until it is available
+- List only live capabilities; nothing is listed as coming
 - Keep tool names and relay types canonical (aligned with gateway contract)
 - Write developer-facing documentation and examples
 - Write and maintain Vitest tests for all packages

@@ -75,7 +75,7 @@ Curated Pareto entries — keep top ~20 by utility. Overflow migrates to **Super
     copy — flagged as Class A, not merged unilaterally), left #32 alone.
   applies_when: any repo_frozen / stuck-PR finding, in this repo or elsewhere in the fleet
   evidence: measured
-  promote: candidate
+  promote: local
 
 - id: mem.kit.20260922.repo-frozen-burst-reopen
   title: Burst-reopened stale PR heads can look like frozen useful work
@@ -97,7 +97,7 @@ Curated Pareto entries — keep top ~20 by utility. Overflow migrates to **Super
     required contexts before counting or reopening queue items.
   applies_when: any repo_frozen / stale PR burst / uncommitted-sweep finding
   evidence: measured
-  promote: candidate
+  promote: local
 
 ---
 
@@ -120,7 +120,7 @@ Live unknowns that should inform the next session's direction.
     description is a repo setting, not a file, so it changes only via gh repo edit.
   applies_when: any marketing or coherence ask to change kit listing copy on the Official MCP Registry or Smithery
   evidence: measured
-  promote: candidate
+  promote: local
 
 ---
 

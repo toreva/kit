@@ -105,7 +105,22 @@ Curated Pareto entries — keep top ~20 by utility. Overflow migrates to **Super
 
 Live unknowns that should inform the next session's direction.
 
-_No entries yet._
+- id: mem.kit.20261126.listing-copy-not-live-until-mcp-tag
+  title: "server.json and repo description edits do not reach the MCP Registry until an mcp-v* tag"
+  type: constraint
+  captured: 2026-11-26
+  source: claude-code
+  session_ref: intake/pending-dispatches/2026-11-26-marketing-kit-queenscliff-0-0005-steyne-coherence-rows-34-and-2-kit-listin-36c93fc4c855a47d29ba08be.md
+  objectives: [OBJ-08]
+  summary: >
+    Registry listing copy is published only by .github/workflows/publish-mcp.yml on an
+    mcp-v* tag (or manual dispatch), and npm publish is skipped when the version already
+    exists. A merged server.json description change therefore leaves the live Registry and
+    Smithery listing on the old text until a version-bumped release. The GitHub repo
+    description is a repo setting, not a file, so it changes only via gh repo edit.
+  applies_when: any marketing or coherence ask to change kit listing copy on the Official MCP Registry or Smithery
+  evidence: measured
+  promote: candidate
 
 ---
 
